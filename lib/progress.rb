@@ -1,8 +1,7 @@
 class Progress
   def self.start(name, total = 100)
-    $stdout.sync = true
-    
-    # @mutex ||= Mutex.new
+    @io ||= $stdout
+    @io.sync = true
     
     @each = total / 1000
     @count = 0
@@ -13,17 +12,15 @@ class Progress
     message highight('...')
     yield
     message percent
-    puts
+    @io.puts
   end
 
   def self.step
-    # @mutex.synchronize do
-      @current += 1
-      if (@count += 1) >= @each
-        message highight(percent)
-        @count = 0
-      end
-    # end
+    @current += 1
+    if (@count += 1) >= @each
+      message highight(percent)
+      @count = 0
+    end
   end
 
 private
@@ -33,7 +30,7 @@ private
   end
   
   def self.message(s)
-    print "\r\e[0K#{@name % s}"
+    @io.print "\r\e[0K#{@name % s}"
   end
 
   def self.highight(s)
@@ -41,5 +38,5 @@ private
   end
 end
 
-require 'array'
+require 'enumerable'
 require 'integer'

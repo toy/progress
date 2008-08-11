@@ -1,4 +1,5 @@
 progress
 ========
 
-A gem that provides...
+Class to show progress during script run
+
