@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["toy"]
   s.autorequire = %q{progress}
-  s.date = %q{2008-08-11}
+  s.date = %q{2008-10-31}
   s.description = %q{Class to show progress during script run}
   s.email = %q{ivan@workisfun.ru}
   s.extra_rdoc_files = ["README", "LICENSE", "TODO"]
