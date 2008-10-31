@@ -3,14 +3,6 @@ require 'progress'
 require 'stringio'
 
 describe Progress do
-  before(:each) do
-    class Progress
-      def self.io=(io)
-        @io = io
-      end
-    end
-  end
-  
   it "should show valid output" do
     Progress.io = io = StringIO.new
     Progress.start('Test', 1000) do
@@ -44,5 +36,14 @@ describe Progress do
       c += 1
     end
     io.string.should =~ Regexp.new("100.0")
+  end
+
+  it "should allow enclosed progress" do
+    11.times_with_progress('A') do |i|
+      11.times_with_progress('B') do |i|
+        11.times_with_progress('C') do |i|
+        end
+      end
+    end
   end
 end

@@ -1,40 +1,96 @@
+require 'singleton'
+
 class Progress
+  include Singleton
+
+  # start progress indication
+  # ==== Examples
+  #   Progress.start('Test', 1000)
+  #   ...
+  #   Progress.step
+  #   ...
+  #   Progress.stop('Test', 1000)
+  #
+  #   Progress.start('Test', 1000) do
+  #     ...
+  #     Progress.step
+  #     ...
+  #   end
   def self.start(name, total = 100)
-    @io ||= $stdout
-    @io.sync = true
-    
-    @each = total / 1000
-    @count = 0
-
-    @current = 0
-    @total = total
-    @name = name + ': %s'
-    message highight('...')
-    yield
-    message percent
-    @io.puts
-  end
-
-  def self.step
-    @current += 1
-    if (@count += 1) >= @each
-      message highight(percent)
-      @count = 0
+    levels << new(name, total, levels.length)
+    print_message
+    if block_given?
+      yield
+      stop
     end
   end
 
-private
+  def self.step
+    levels[-1].step
+    print_message
+  end
 
-  def self.percent
+  def self.stop
+    levels.pop.stop
+    print_message unless levels.empty?
+  end
+
+  # :nodoc:
+  def self.io=(io)
+    @io = io
+  end
+
+  # :nodoc:
+  def initialize(name, total, level)
+    @name = name + ': %s'
+    @total = total
+    @level = level
+    @current = 0
+    start
+  end
+
+  # :nodoc:
+  def start
+    self.message = '...'
+  end
+
+  # :nodoc:
+  def step
+    @current += 1
+    self.message = percent
+  end
+
+  # :nodoc:
+  def stop
+    self.message = percent
+  end
+
+  # :nodoc:
+  def message
+    @message
+  end
+
+protected
+
+  def self.print_message
+    message = levels.map{ |level| level.message } * ' > '
+    @io ||= $stdout
+    @io.sync = true
+    @io.print "\r" + message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" }
+    @previous_length = message.length
+  end
+
+  def self.levels
+    @levels ||= []
+  end
+
+  def percent
     '%5.1f%%' % (@current * 100.0 / @total)
   end
-  
-  def self.message(s)
-    @io.print "\r\e[0K#{@name % s}"
-  end
 
-  def self.highight(s)
-    "\e[1m#{s}\e[0m"
+  def message=(s)
+    formatted = s.ljust(6)[0, 6]
+    @message = @name % formatted
   end
 end
 
