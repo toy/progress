@@ -32,7 +32,11 @@ class Progress
 
   def self.stop
     levels.pop.stop
-    print_message unless levels.empty?
+    unless levels.empty?
+      print_message
+    else
+      puts
+    end
   end
 
   # :nodoc:
