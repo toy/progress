@@ -1,5 +1,5 @@
 module Enumerable
-  # note that Progress.step is caled automatically
+  # note that Progress.step is called automatically
   # ==== Example
   #   [1, 2, 3].each_with_progress('Numbers') do |number|
   #     sleep(number)
@@ -13,7 +13,7 @@ module Enumerable
     end
   end
 
-  # note that Progress.step is caled automatically
+  # note that Progress.step is called automatically
   # ==== Example
   #   [1, 2, 3].each_with_index_and_progress('Numbers') do |number, index|
   #     sleep(number)
