@@ -1,20 +1,27 @@
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
 require 'singleton'
 
 class Progress
+  VERSION = '0.0.3'
+
   include Singleton
 
   # start progress indication
-  # ==== Examples
+  # ==== Procedural example
   #   Progress.start('Test', 1000)
-  #   ...
-  #   Progress.step
-  #   ...
-  #   Progress.stop('Test', 1000)
-  #
+  #   1000.times{ Progress.step }
+  #   Progress.stop
+  # ==== Block example
   #   Progress.start('Test', 1000) do
-  #     ...
-  #     Progress.step
-  #     ...
+  #     1000.times{ Progress.step }
+  #   end
+  # ==== Enclosed block example
+  #   [1, 2, 3].each_with_progress('1 2 3') do |one_of_1_2_3|
+  #     10.times_with_progress('10') do |one_of_10|
+  #       sleep(0.001)
+  #     end
   #   end
   def self.start(name, total = 100)
     levels << new(name, total, levels.length)
@@ -32,20 +39,14 @@ class Progress
 
   def self.stop
     levels.pop.stop
-    unless levels.empty?
-      print_message
-    else
-      puts
-    end
+    @io.puts if levels.empty?
   end
 
-  # :nodoc:
-  def self.io=(io)
+  def self.io=(io) # :nodoc:
     @io = io
   end
 
-  # :nodoc:
-  def initialize(name, total, level)
+  def initialize(name, total, level) # :nodoc:
     @name = name + ': %s'
     @total = total
     @level = level
@@ -53,24 +54,20 @@ class Progress
     start
   end
 
-  # :nodoc:
-  def start
-    self.message = '...'
+  def start # :nodoc:
+    self.message = '.' * 6
   end
 
-  # :nodoc:
-  def step
+  def step # :nodoc:
     @current += 1
     self.message = percent
   end
 
-  # :nodoc:
-  def stop
+  def stop # :nodoc:
     self.message = percent
   end
 
-  # :nodoc:
-  def message
+  def message # :nodoc:
     @message
   end
 
@@ -98,5 +95,5 @@ protected
   end
 end
 
-require 'enumerable'
-require 'integer'
+require 'progress/enumerable'
+require 'progress/integer'
