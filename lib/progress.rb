@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'singleton'
 
 class Progress
-  VERSION = '0.0.4'
+  VERSION = '0.0.5'
 
   include Singleton
 
@@ -29,12 +29,13 @@ class Progress
   #       sleep(0.001)
   #     end
   #   end
-  def self.start(name, total = 100)
+  def self.start(name, total = 1)
     levels << new(name, total, levels.length)
     print_message
     if block_given?
-      yield
+      result = yield
       stop
+      result
     end
   end
 

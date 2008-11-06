@@ -111,4 +111,10 @@ describe Progress do
     end
     io_pop.should =~ /100\.0.*\n$/
   end
+
+  it "should pipe result from block" do
+    Progress.start('Test') do
+      'qwerty'
+    end.should == 'qwerty'
+  end
 end
