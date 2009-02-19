@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'singleton'
 
 class Progress
-  VERSION = '0.0.5'
+  VERSION = '0.0.6'
 
   include Singleton
 
@@ -82,7 +82,7 @@ protected
 
   def self.print_message
     message = levels.map{ |level| level.message } * ' > '
-    @io ||= $stdout
+    @io ||= $stderr
     @io.sync = true
     @io.print "\r" + message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" }
     @previous_length = message.length

@@ -1,3 +1,7 @@
+== 0.0.6 2009-02-19
+
+* printing messages to stderr
+
 == 0.0.5 2008-11-07
 
 * piping result of block execution

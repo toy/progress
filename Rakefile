@@ -19,3 +19,4 @@ $hoe = Hoe.new('progress', Progress::VERSION) do |p|
 end
 
 require 'newgem/tasks'
+Dir['tasks/**/*.rake'].each { |t| load t }
