@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'singleton'
 
 class Progress
-  VERSION = '0.0.6'
+  VERSION = '0.0.7'
 
   include Singleton
 

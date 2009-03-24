@@ -1,10 +1,10 @@
-History.txt
-Manifest.txt
-README.rdoc
-Rakefile
-lib/progress.rb
+CHANGELOG
 lib/progress/enumerable.rb
 lib/progress/integer.rb
+lib/progress.rb
+Manifest
+Rakefile
+README.rdoc
 script/console
 script/destroy
 script/generate
