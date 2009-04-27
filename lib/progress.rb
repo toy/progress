@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'singleton'
 
 class Progress
-  VERSION = '0.0.7.1'
+  VERSION = '0.0.8'
 
   include Singleton
 
@@ -29,8 +29,12 @@ class Progress
   #       sleep(0.001)
   #     end
   #   end
-  def self.start(name, total = 1)
-    levels << new(name, total, levels.length)
+  # ==== To output progress as lines (not trying to stay on line)
+  #   Progress.start('Test', 1000, :lines => true) do
+  #     1000.times{ Progress.step }
+  #   end
+  def self.start(name, total = 1, options = {})
+    levels << new(name, total, levels.length, options)
     print_message
     if block_given?
       result = yield
@@ -39,24 +43,11 @@ class Progress
     end
   end
 
-  def self.step(steps = 1)
-    levels[-1].step(steps)
-    print_message
-  end
-
-  def self.stop
-    levels.pop.stop
-    @io.puts if levels.empty?
-  end
-
-  def self.io=(io) # :nodoc:
-    @io = io
-  end
-
-  def initialize(name, total, level) # :nodoc:
+  def initialize(name, total, level, options) # :nodoc:
     @name = name + ': %s'
     @total = total
     @level = level
+    @options = options
     @current = 0
     start
   end
@@ -78,19 +69,11 @@ class Progress
     @message
   end
 
+  def options # :nodoc:
+    @options
+  end
+
 protected
-
-  def self.print_message
-    message = levels.map{ |level| level.message } * ' > '
-    @io ||= $stderr
-    @io.sync = true
-    @io.print "\r" + message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" }
-    @previous_length = message.length
-  end
-
-  def self.levels
-    @levels ||= []
-  end
 
   def percent
     '%5.1f%%' % (@current * 100.0 / @total)
@@ -100,6 +83,41 @@ protected
     formatted = s.ljust(6)[0, 6]
     @message = @name % formatted
   end
+
+  module ClassMethods
+    def step(steps = 1)
+      levels[-1].step(steps)
+      print_message
+    end
+
+    def stop
+      levels.pop.stop
+      @io.puts if levels.empty?
+    end
+
+    def io=(io) # :nodoc:
+      @io = io
+    end
+
+  protected
+
+    def print_message
+      message = levels.map{ |level| level.message } * ' > '
+      @io ||= $stderr
+      @io.sync = true
+      if @io.tty? && !levels.any?{ |level| level.options[:lines] }
+        @io.print "\r" + message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" }
+        @previous_length = message.length
+      else
+        @io.puts message
+      end
+    end
+
+    def levels
+      @levels ||= []
+    end
+  end
+  extend ClassMethods
 end
 
 require 'progress/enumerable'

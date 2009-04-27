@@ -4,8 +4,8 @@ module Enumerable
   #   [1, 2, 3].each_with_progress('Numbers') do |number|
   #     sleep(number)
   #   end
-  def each_with_progress(name)
-    Progress.start(name, length) do
+  def each_with_progress(name, options = {})
+    Progress.start(name, length, options) do
       each do |item|
         yield item
         Progress.step
@@ -18,8 +18,8 @@ module Enumerable
   #   [1, 2, 3].each_with_index_and_progress('Numbers') do |number, index|
   #     sleep(number)
   #   end
-  def each_with_index_and_progress(name)
-    Progress.start(name, length) do
+  def each_with_index_and_progress(name, options = {})
+    Progress.start(name, length, options) do
       each_with_index do |item, index|
         yield item, index
         Progress.step
