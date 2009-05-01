@@ -106,7 +106,7 @@ protected
       @io ||= $stderr
       @io.sync = true
       if @io.tty? && !levels.any?{ |level| level.options[:lines] }
-        @io.print "\r" + message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" }
+        @io.print message.ljust(@previous_length || 0).gsub(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" } + "\r"
         @previous_length = message.length
       else
         @io.puts message
