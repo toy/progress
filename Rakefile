@@ -9,9 +9,9 @@ load 'tasks/rspec.rake'
 task :default => :spec
 task :test
 
-require File.dirname(__FILE__) + '/lib/progress'
+version = YAML.load_file(File.join(File.dirname(__FILE__), 'VERSION.yml')).join('.') rescue nil
 
-echoe = Echoe.new('progress', Progress::VERSION) do |p|
+echoe = Echoe.new('progress', version) do |p|
   p.author = "toy"
   p.summary = "A library to show progress of long running tasks."
 end

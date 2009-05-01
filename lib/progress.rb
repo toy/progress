@@ -4,8 +4,6 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'singleton'
 
 class Progress
-  VERSION = '0.0.8'
-
   include Singleton
 
   # start progress indication
