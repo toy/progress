@@ -31,8 +31,8 @@ class Progress
   #   Progress.start('Test', 1000, :lines => true) do
   #     1000.times{ Progress.step }
   #   end
-  def self.start(name, total = 1, options = {})
-    levels << new(name, total, levels.length, options)
+  def self.start(title, total = 1, options = {})
+    levels << new(title, total, levels.length, options)
     print_message
     if block_given?
       result = yield
@@ -41,8 +41,9 @@ class Progress
     end
   end
 
-  def initialize(name, total, level, options) # :nodoc:
-    @name = name + ': %s'
+  attr_reader :message, :options
+  def initialize(title, total, level, options) # :nodoc:
+    @title = title + ': %s'
     @total = total
     @level = level
     @options = options
@@ -63,14 +64,6 @@ class Progress
     self.message = percent
   end
 
-  def message # :nodoc:
-    @message
-  end
-
-  def options # :nodoc:
-    @options
-  end
-
 protected
 
   def percent
@@ -79,7 +72,7 @@ protected
 
   def message=(s)
     formatted = s.ljust(6)[0, 6]
-    @message = @name % formatted
+    @message = @title % formatted
   end
 
   module ClassMethods
