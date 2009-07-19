@@ -5,7 +5,7 @@ describe Progress do
     @io = StringIO.new
     Progress.io = @io
   end
-  
+
   def io_pop
     @io.seek(0)
     s = @io.read
@@ -30,7 +30,7 @@ describe Progress do
     Progress.stop
     verify_output_after_stop
   end
-  
+
   it "should show valid output for block version" do
     Progress.start('Test', 1000) do
       1000.times do |i|
@@ -43,16 +43,16 @@ describe Progress do
 
   describe Enumerable do
     before :each do
-      @a = Array.new(1000){ |n| n }
+      @a = (0...1000).to_a
     end
 
     describe 'with each_with_progress' do
       it "should not break each" do
-        c = 0
+        a = []
         @a.each_with_progress('Test') do |n|
-          n.should == @a[c]
-          c += 1
+          a << n
         end
+        a.should == @a
       end
 
       it "should show valid output for each_with_progress" do
@@ -65,12 +65,12 @@ describe Progress do
 
     describe 'with each_with_index_and_progress' do
       it "should not break each_with_index" do
-        c = 0
+        a = []
         @a.each_with_index_and_progress('Test') do |n, i|
-          n.should == @a[c]
-          i.should == @a[c]
-          c += 1
+          n.should == i
+          a << n
         end
+        a.should == @a
       end
 
       it "should show valid output for each_with_progress" do
@@ -78,6 +78,39 @@ describe Progress do
           verify_output_before_step(n)
         end
         verify_output_after_stop
+      end
+    end
+
+    describe 'with with_progress' do
+      it "should not break each" do
+        a = []
+        @a.with_progress('Test').each do |n|
+          a << n
+        end
+        a.should == @a
+      end
+
+      it "should not break any?" do
+        @a.with_progress('Hello').find{ |n| n == 100 }.should == @a.find{ |n| n == 100 }
+        @a.with_progress('Hello').find{ |n| n == 10000 }.should == @a.find{ |n| n == 10000 }
+        default = proc{ 'default' }
+        @a.with_progress('Hello').find(default){ |n| n == 10000 }.should == @a.find(default){ |n| n == 10000 }
+      end
+
+      it "should not break map" do
+        @a.with_progress('Hello').map{ |n| n * n }.should == @a.map{ |n| n * n }
+      end
+
+      it "should not break grep" do
+        @a.with_progress('Hello').grep(100).should == @a.grep(100)
+      end
+
+      it "should not break each_cons" do
+        without_progress = []
+        @a.each_cons(3){ |values| without_progress << values }
+        with_progress = []
+        @a.with_progress('Hello').each_cons(3){ |values| with_progress << values }
+        without_progress.should == with_progress
       end
     end
   end

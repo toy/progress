@@ -6,7 +6,7 @@
 
 Class to show progress during console script run
 
-== FEATURES/PROBLEMS:
+== FEATURES:
 
 * Progress
 * Enclosed progress
@@ -14,7 +14,32 @@ Class to show progress during console script run
 == SYNOPSIS:
 
   1000.times_with_progress('Wait') do |time|
-    sleep(time * 0.0001)
+    puts time
+  end
+
+  [1, 2, 3].with_progress('Wait').each do |i|
+    puts i
+  end
+
+  (1..100).with_progress('Wait').each do |i|
+    puts i
+  end
+
+  {
+    :a => 'a',
+    :b => 'b',
+    :c => 'c',
+    :d => 'd',
+  }.with_progress('Wait').each do |k, v|
+    puts "#{k} => #{v}"
+  end
+
+  (1..10).with_progress('Outer').map do |a|
+    (1..10).with_progress('Middle').map do |b|
+      (1..10).with_progress('Inner').map do |c|
+        [a, b, c]
+      end
+    end
   end
 
 == REQUIREMENTS:
@@ -29,7 +54,7 @@ Class to show progress during console script run
 
 (The MIT License)
 
-Copyright (c) 2008 toy full name
+Copyright (c) 2008 toy
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

@@ -86,7 +86,7 @@ protected
       @io.puts if levels.empty?
     end
 
-    def io=(io) # :nodoc:
+    def io=(io)
       @io = io
     end
 
@@ -110,6 +110,8 @@ protected
   end
   extend ClassMethods
 end
+
+require 'progress/with_progress'
 
 require 'progress/enumerable'
 require 'progress/integer'
