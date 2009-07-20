@@ -6,9 +6,6 @@ lib/progress.rb
 Manifest
 Rakefile
 README.rdoc
-script/console
-script/destroy
-script/generate
 spec/progress_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
