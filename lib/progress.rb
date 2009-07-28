@@ -90,26 +90,30 @@ protected
       @io ||= $stderr
     end
 
+    def io_tty?
+      ENV['PROGRESS_TTY'] || io.tty?
+    end
+
     def io=(io)
       @io = io
     end
 
     def lines=(value)
-      @lines = !!value
+      @lines = value
     end
     def lines?
       if @lines.nil?
-        @lines = !io.tty?
+        @lines = !io_tty?
       end
       @lines
     end
 
     def highlight=(value)
-      @highlight = !!value
+      @highlight = value
     end
     def highlight?
       if @highlight.nil?
-        @highlight = !!io.tty?
+        @highlight = io_tty?
       end
       @highlight
     end
