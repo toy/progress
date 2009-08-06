@@ -127,7 +127,7 @@ protected
       unless lines?
         previous_length = @previous_length || 0
         @previous_length = message.length
-        message = message.ljust(previous_length, '>') + "\r"
+        message = message.ljust(previous_length, ' ') + "\r"
       end
 
       if highlight?
