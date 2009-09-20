@@ -192,4 +192,18 @@ describe Progress do
       end
     end.should == [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
   end
+  it "should kill progress on cycle break" do
+    2.times do
+      catch(:lalala) do
+        2.times_with_progress('A') do |a|
+          io_pop.should == "A: ......\n"
+          2.times_with_progress('B') do |b|
+            io_pop.should == "A: ...... > B: ......\n"
+            throw(:lalala)
+          end
+        end
+      end
+      io_pop.should == "\n"
+    end
+  end
 end

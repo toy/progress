@@ -56,9 +56,11 @@ class Progress
       levels << new(title, total)
       print_message
       if block_given?
-        result = yield
-        stop
-        result
+        begin
+          yield
+        ensure
+          stop
+        end
       end
     end
 
