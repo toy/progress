@@ -141,28 +141,30 @@ describe Progress do
   end
 
   it "should allow enclosed progress" do
-    10.times_with_progress('A') do |a|
-      io_pop.should =~ /#{Regexp.quote(a == 0 ? '......' : (a * 10.0).to_s)}/
-      10.times_with_progress('B') do |b|
-        io_pop.should =~ /#{Regexp.quote(a == 0 && b == 0 ? '......' : (a * 10.0 + b).to_s)}.*#{Regexp.quote(b == 0 ? '......' : (b * 10.0).to_s)}/
+    _a, _b = 2, 3
+    _a.times_with_progress('A') do |a|
+      io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [100 * a / _a.to_f]
+      _b.times_with_progress('B') do |b|
+        io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [100 * (a + b / _b.to_f) / _a.to_f, 100 * b / _b.to_f]
       end
-      io_pop.should =~ /#{Regexp.quote(((a + 1) * 10.0).to_s)}.*100\.0/
+      io_pop.should == "A: %5.1f%% > B: 100.0%%\n" % [100 * (a + 1) / _a.to_f]
     end
-    io_pop.should =~ /100\.0.*\n$/
+    io_pop.should == "A: 100.0%\n\n"
   end
 
   it "should not overlap outer progress if inner exceeds" do
-    10.times_with_progress('A') do |a|
-      io_pop.should =~ /#{Regexp.quote(a == 0 ? '......' : (a * 10.0).to_s)}/
-      Progress.start('B', 10) do
-        20.times do |b|
-          io_pop.should =~ /#{Regexp.quote(a == 0 && b == 0 ? '......' : (a * 10.0 + [b, 10].min).to_s)}.*#{Regexp.quote(b == 0 ? '......' : (b * 10.0).to_s)}/
+    _a, _b = 2, 3
+    _a.times_with_progress('A') do |a|
+      io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [100 * a / _a.to_f]
+      Progress.start('B', _b) do
+        (_b * 2).times do |b|
+          io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [100 * (a + [b / _b.to_f, 1].min) / _a.to_f, 100 * b / _b.to_f]
           Progress.step
         end
       end
-      io_pop.should =~ /#{Regexp.quote(((a + 1) * 10.0).to_s)}.*200\.0/
+      io_pop.should == "A: %5.1f%% > B: 200.0%%\n" % [100 * (a + 1) / _a.to_f]
     end
-    io_pop.should =~ /100\.0.*\n$/
+    io_pop.should == "A: 100.0%\n\n"
   end
 
   it "should pipe result from block" do
@@ -192,6 +194,7 @@ describe Progress do
       end
     end.should == [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
   end
+
   it "should kill progress on cycle break" do
     2.times do
       catch(:lalala) do
