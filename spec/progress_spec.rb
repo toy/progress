@@ -227,4 +227,26 @@ describe Progress do
       io_pop.should == "A: 100.0%\n\n"
     end
   end
+
+  describe "using Progress instead of Progress.start" do
+    it "should show valid output for procedural version" do
+      Progress('Test', 1000)
+      1000.times do |i|
+        verify_output_before_step(i)
+        Progress.step
+      end
+      Progress.stop
+      verify_output_after_stop
+    end
+
+    it "should show valid output for block version" do
+      Progress('Test', 1000) do
+        1000.times do |i|
+          verify_output_before_step(i)
+          Progress.step
+        end
+      end
+      verify_output_after_stop
+    end
+  end
 end

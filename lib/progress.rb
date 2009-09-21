@@ -156,3 +156,11 @@ require 'progress/with_progress'
 
 require 'progress/enumerable'
 require 'progress/integer'
+
+# like Pathname
+module Kernel
+  def Progress(title, total = 1, &block)
+    Progress.start(title, total, &block)
+  end
+  private :Progress
+end
