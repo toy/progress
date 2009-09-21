@@ -8,6 +8,7 @@ class Progress
 
   module InstanceMethods # :nodoc:
     attr_accessor :title, :current, :total
+    attr_reader :current_step
     def initialize(title, total)
       total = Float(total)
       @title, @current, @total = title, 0.0, total == 0.0 ? 1.0 : total
@@ -18,7 +19,16 @@ class Progress
     end
 
     def to_f(inner)
-      (current + (inner < 1.0 ? inner : 1.0)) / total
+      inner = [inner, 1.0].min
+      inner *= current_step if current_step
+      (current + inner) / total
+    end
+
+    def step(steps)
+      @current_step = steps
+      yield
+    ensure
+      @current_step = nil
     end
   end
   include InstanceMethods
@@ -66,8 +76,15 @@ class Progress
 
     def step(steps = 1)
       if levels.last
+        if block_given?
+          levels.last.step(steps) do
+            yield
+          end
+        end
         levels.last.current += Float(steps)
         print_message
+      elsif block_given?
+        yield
       end
     end
 

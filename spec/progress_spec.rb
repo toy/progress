@@ -140,33 +140,6 @@ describe Progress do
     end
   end
 
-  it "should allow enclosed progress" do
-    _a, _b = 2, 3
-    _a.times_with_progress('A') do |a|
-      io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [100 * a / _a.to_f]
-      _b.times_with_progress('B') do |b|
-        io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [100 * (a + b / _b.to_f) / _a.to_f, 100 * b / _b.to_f]
-      end
-      io_pop.should == "A: %5.1f%% > B: 100.0%%\n" % [100 * (a + 1) / _a.to_f]
-    end
-    io_pop.should == "A: 100.0%\n\n"
-  end
-
-  it "should not overlap outer progress if inner exceeds" do
-    _a, _b = 2, 3
-    _a.times_with_progress('A') do |a|
-      io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [100 * a / _a.to_f]
-      Progress.start('B', _b) do
-        (_b * 2).times do |b|
-          io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [100 * (a + [b / _b.to_f, 1].min) / _a.to_f, 100 * b / _b.to_f]
-          Progress.step
-        end
-      end
-      io_pop.should == "A: %5.1f%% > B: 200.0%%\n" % [100 * (a + 1) / _a.to_f]
-    end
-    io_pop.should == "A: 100.0%\n\n"
-  end
-
   it "should pipe result from block" do
     Progress.start('Test') do
       'qwerty'
@@ -207,6 +180,51 @@ describe Progress do
         end
       end
       io_pop.should == "\n"
+    end
+  end
+
+  [[2, 2000], [20, 200], [200, 20], [2000, 2]].each do |_a, _b|
+    it "should allow enclosed progress [#{_a}, #{_b}]" do
+      _a.times_with_progress('A') do |a|
+        io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
+        _b.times_with_progress('B') do |b|
+          io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + b / _b.to_f) / _a.to_f * 100.0, b / _b.to_f * 100.0]
+        end
+        io_pop.should == "A: %5.1f%% > B: 100.0%%\n" % [(a + 1) / _a.to_f * 100.0]
+      end
+      io_pop.should == "A: 100.0%\n\n"
+    end
+
+    it "should not overlap outer progress if inner exceeds [#{_a}, #{_b}]" do
+      _a.times_with_progress('A') do |a|
+        io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
+        Progress.start('B', _b) do
+          (_b * 2).times do |b|
+            io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + [b / _b.to_f, 1].min) / _a.to_f * 100.0, b / _b.to_f * 100.0]
+            Progress.step
+          end
+        end
+        io_pop.should == "A: %5.1f%% > B: 200.0%%\n" % [(a + 1) / _a.to_f * 100.0]
+      end
+      io_pop.should == "A: 100.0%\n\n"
+    end
+
+    it "should allow step with block to validly count custom progresses [#{_a}, #{_b}]" do
+      a_step = 99
+      Progress.start('A', _a * 100) do
+        io_pop.should == "A: ......\n"
+        _a.times do |a|
+          Progress.step(a_step) do
+            _b.times_with_progress('B') do |b|
+              io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a * a_step + b / _b.to_f * a_step) / (_a * 100).to_f * 100.0, b / _b.to_f * 100.0]
+            end
+            io_pop.should == "A: %5.1f%% > B: 100.0%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
+          end
+          io_pop.should == "A: %5.1f%%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
+        end
+        Progress.step _a
+      end
+      io_pop.should == "A: 100.0%\n\n"
     end
   end
 end
