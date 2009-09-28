@@ -148,7 +148,7 @@ class Progress
           message
         end
         @previous_length = message_cl.length
-        message = "#{message}#{' ' * [previous_length - message_cl.length, 0].max}]\r"
+        message = "#{message}#{' ' * [previous_length - message_cl.length, 0].max}\r"
       end
 
       lines? ? io.puts(message) : io.print(message)
