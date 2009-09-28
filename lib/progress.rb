@@ -134,18 +134,22 @@ class Progress
       inner = 0
       levels.reverse.each do |l|
         current = l.to_f(inner)
-        messages << "#{l.title}: #{(current == 0 ? '......' : '%5.1f%%' % (current * 100.0))[0, 6]}"
+        value = current == 0 ? '......' : '%5.1f%%' % (current * 100.0)
+        messages << "#{l.title}: #{!highlight? || value == '100.0%' ? value : "\e[1m#{value}\e[0m"}"
         inner = current
       end
       message = messages.reverse * ' > '
 
       unless lines?
         previous_length = @previous_length || 0
-        @previous_length = message.length
-        message = message.ljust(previous_length, ' ') + "\r"
+        message_cl = if highlight?
+          message.gsub(/\033\[(0|1)m/, '')
+        else
+          message
+        end
+        @previous_length = message_cl.length
+        message = "#{message}#{' ' * [previous_length - message_cl.length, 0].max}]\r"
       end
-
-      message.gsub!(/\d+\.\d+/){ |s| s == '100.0' ? s : "\e[1m#{s}\e[0m" } if highlight?
 
       lines? ? io.puts(message) : io.print(message)
     end

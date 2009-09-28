@@ -1,11 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 
-Progress.start('Test') do
-  Progress.start('Test') do
-    'qwerty'
-  end
-end
-
 describe Progress do
   before :each do
     @io = StringIO.new
