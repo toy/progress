@@ -97,7 +97,7 @@ class Progress
 
     def stop
       if levels.last
-        print_message(true) if levels.last.step_if_blank
+        print_message(true) if levels.last.step_if_blank || levels.length == 1
         levels.pop
         io.puts if levels.empty?
       end
