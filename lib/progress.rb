@@ -151,7 +151,7 @@ class Progress
         inner = 0
         levels.reverse.each do |l|
           current = l.to_f(inner)
-          value = current == 0 ? '......' : '%5.1f%%' % (current * 100.0)
+          value = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
           messages << "#{l.title}: #{!highlight? || value == '100.0%' ? value : "\e[1m#{value}\e[0m"}"
           inner = current
         end
