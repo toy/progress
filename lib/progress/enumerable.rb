@@ -9,7 +9,7 @@ module Enumerable
   #   [1, 2, 3].with_progress('Numbers').each_cons(2) do |numbers|
   #     p numbers
   #   end
-  def with_progress(title)
+  def with_progress(title = nil)
     Progress::WithProgress.new(self, title)
   end
 
@@ -18,8 +18,8 @@ module Enumerable
   #   [1, 2, 3].each_with_progress('Numbers') do |number|
   #     sleep(number)
   #   end
-  def each_with_progress(title, *args, &block)
-    with_progress(title).each(*args, &block)
+  def each_with_progress(title = nil, &block)
+    with_progress(title).each(&block)
   end
 
   # note that Progress.step is called automatically
@@ -27,8 +27,8 @@ module Enumerable
   #   [1, 2, 3].each_with_index_and_progress('Numbers') do |number, index|
   #     sleep(number)
   #   end
-  def each_with_index_and_progress(title, *args, &block)
-    with_progress(title).each_with_index(*args, &block)
+  def each_with_index_and_progress(title, &block)
+    with_progress(title).each_with_index(&block)
   end
 
 end

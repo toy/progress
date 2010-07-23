@@ -10,6 +10,11 @@ class Progress
     attr_accessor :title, :current, :total
     attr_reader :current_step
     def initialize(title, total)
+      if title.is_a?(Numeric) && total.nil?
+        title, total = nil, title
+      elsif total.nil?
+        total = 1
+      end
       total = Float(total)
       @title, @current, @total = title, 0.0, total == 0.0 ? 1.0 : total
     end
@@ -62,7 +67,7 @@ class Progress
     #   Progress.lines = true
     # ==== To force highlight
     #   Progress.highlight = true
-    def start(title, total = 1)
+    def start(title = nil, total = nil)
       levels << new(title, total)
       print_message(true)
       if block_given?
@@ -152,7 +157,7 @@ class Progress
         levels.reverse.each do |l|
           current = l.to_f(inner)
           value = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
-          messages << "#{l.title}: #{!highlight? || value == '100.0%' ? value : "\e[1m#{value}\e[0m"}"
+          messages << "#{"#{l.title}: " if l.title}#{!highlight? || value == '100.0%' ? value : "\e[1m#{value}\e[0m"}"
           inner = current
         end
         message = messages.reverse * ' > '
@@ -181,7 +186,7 @@ require 'progress/integer'
 
 # like Pathname
 module Kernel
-  def Progress(title, total = 1, &block)
+  def Progress(title = nil, total = nil, &block)
     Progress.start(title, total, &block)
   end
   private :Progress
