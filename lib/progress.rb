@@ -81,24 +81,24 @@ class Progress
       end
     end
 
-    def step(steps = 1)
+    def step(steps = 1, &block)
       if levels.last
-        if block_given?
-          levels.last.step(steps) do
-            yield
-          end
-        end
-        levels.last.current += Float(steps)
-        print_message
-      elsif block_given?
-        yield
+        set(levels.last.current + Float(steps), &block)
+      elsif block
+        block.call
       end
     end
 
-    def set(value)
+    def set(value, &block)
       if levels.last
+        ret = if block
+          levels.last.step(value - levels.last.current, &block)
+        end
         levels.last.current = Float(value)
         print_message
+        ret
+      elsif block
+        block.call
       end
     end
 

@@ -109,6 +109,18 @@ describe Progress do
       end.should == 'qwerty'
     end
 
+    it "should return result from step" do
+      Progress.start do
+        Progress.step{ 'qwerty' }.should == 'qwerty'
+      end
+    end
+
+    it "should return result from set" do
+      Progress.start do
+        Progress.set(1){ 'qwerty' }.should == 'qwerty'
+      end
+    end
+
     it "should return result from nested block" do
       [1, 2, 3].with_progress('a').map do |a|
         [1, 2, 3].with_progress('b').map do |b|
@@ -177,12 +189,6 @@ describe Progress do
       end
     end
   end
-
-
-
-
-
-
 
   describe Enumerable do
     before :each do
