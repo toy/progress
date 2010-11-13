@@ -179,3 +179,4 @@ end
 require 'progress/enumerable'
 require 'progress/integer'
 require 'progress/kernel'
+require 'progress/active_record'
