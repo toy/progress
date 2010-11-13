@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{progress}
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Boba Fat"]
@@ -20,8 +20,10 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/progress.rb",
+     "lib/progress/active_record.rb",
      "lib/progress/enumerable.rb",
      "lib/progress/integer.rb",
+     "lib/progress/kernel.rb",
      "lib/progress/with_progress.rb",
      "progress.gemspec",
      "spec/progress_spec.rb",
