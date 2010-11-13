@@ -143,14 +143,7 @@ class Progress
     end
 
     def time_to_print?
-      if @previous
-        if @previous < Time.now - 0.3
-          @previous = Time.now
-          true
-        else
-          false
-        end
-      else
+      if !@previous || @previous < Time.now - 0.3
         @previous = Time.now
         true
       end
