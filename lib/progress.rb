@@ -151,32 +151,28 @@ class Progress
 
     def print_message(force = false)
       if force || time_to_print?
-        messages = []
         inner = 0
+        parts = []
+        parts_cl = []
         levels.reverse.each do |l|
           current = l.to_f(inner)
           value = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
-          message = ''
-          if l.title
-            message << "#{l.title}: "
-          end
-          if !highlight? || value == '100.0%'
-            message << value
-          else
-            message << "\e[1m#{value}\e[0m"
-          end
-          messages << message
           inner = current
+
+          title = l.title ? "#{l.title}: " : ''
+          highlighted = "\e[1m#{value}\e[0m"
+          if !highlight? || value == '100.0%'
+            parts << "#{title}#{value}"
+          else
+            parts << "#{title}#{highlighted}"
+          end
+          parts_cl << "#{title}#{value}"
         end
-        message = messages.reverse * ' > '
+        message = parts.reverse * ' > '
+        message_cl = parts_cl.reverse * ' > '
 
         unless lines?
           previous_length = @previous_length || 0
-          message_cl = if highlight?
-            message.gsub(/\033\[(0|1)m/, '')
-          else
-            message
-          end
           @previous_length = message_cl.length
           message = "#{message}#{' ' * [previous_length - message_cl.length, 0].max}\r"
         end
