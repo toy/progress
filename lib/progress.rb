@@ -12,17 +12,22 @@ class Progress
       elsif total.nil?
         total = 1
       end
-      total = Float(total)
-      @title, @current, @total = title, 0.0, total == 0.0 ? 1.0 : total
+      @title = title
+      @current = 0.0
+      @total = total == 0.0 ? 1.0 : Float(total)
     end
 
     def step_if_blank
-      self.current = 1.0 if current == 0.0 && total == 1.0
+      if current == 0.0 && total == 1.0
+        self.current = 1.0
+      end
     end
 
     def to_f(inner)
       inner = [inner, 1.0].min
-      inner *= current_step if current_step
+      if current_step
+        inner *= current_step
+      end
       (current + inner) / total
     end
 
@@ -99,9 +104,13 @@ class Progress
 
     def stop
       if levels.last
-        print_message(true) if levels.last.step_if_blank || levels.length == 1
+        if levels.last.step_if_blank || levels.length == 1
+          print_message(true)
+        end
         levels.pop
-        io.puts if levels.empty?
+        if levels.empty?
+          io.puts
+        end
       end
     end
 
@@ -154,7 +163,16 @@ class Progress
         levels.reverse.each do |l|
           current = l.to_f(inner)
           value = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
-          messages << "#{"#{l.title}: " if l.title}#{!highlight? || value == '100.0%' ? value : "\e[1m#{value}\e[0m"}"
+          message = ''
+          if l.title
+            message << "#{l.title}: "
+          end
+          if !highlight? || value == '100.0%'
+            message << value
+          else
+            message << "\e[1m#{value}\e[0m"
+          end
+          messages << message
           inner = current
         end
         message = messages.reverse * ' > '
