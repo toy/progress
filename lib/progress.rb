@@ -178,11 +178,4 @@ end
 
 require 'progress/enumerable'
 require 'progress/integer'
-
-# like Pathname
-module Kernel
-  def Progress(title = nil, total = nil, &block)
-    Progress.start(title, total, &block)
-  end
-  private :Progress
-end
+require 'progress/kernel'
