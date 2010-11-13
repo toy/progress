@@ -1,4 +1,6 @@
 require 'enumerator'
+require 'progress/with_progress'
+
 module Enumerable
   # executes any Enumerable method with progress
   # note that methods which don't necessarily go through all items (like find or any?) will not show 100%
@@ -30,5 +32,4 @@ module Enumerable
   def each_with_index_and_progress(title = nil, &block)
     with_progress(title).each_with_index(&block)
   end
-
 end

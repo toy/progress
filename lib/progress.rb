@@ -176,8 +176,6 @@ class Progress
   end
 end
 
-require 'progress/with_progress'
-
 require 'progress/enumerable'
 require 'progress/integer'
 
