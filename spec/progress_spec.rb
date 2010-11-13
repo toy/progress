@@ -22,25 +22,167 @@ describe Progress do
     io_pop.should =~ /100\.0.*\n$/
   end
 
-  it "should show valid output for procedural version" do
-    Progress.start('Test', 1000)
-    1000.times do |i|
-      verify_output_before_step(i)
-      Progress.step
-    end
-    Progress.stop
-    verify_output_after_stop
-  end
+  describe 'direct usage' do
+    describe 'procedural' do
+      it "should show valid output when called as Progress.start" do
+        Progress.start('Test', 1000)
+        1000.times do |i|
+          verify_output_before_step(i)
+          Progress.step
+        end
+        Progress.stop
+        verify_output_after_stop
+      end
 
-  it "should show valid output for block version" do
-    Progress.start('Test', 1000) do
-      1000.times do |i|
-        verify_output_before_step(i)
-        Progress.step
+      it "should show valid output when called as Progress" do
+        Progress('Test', 1000)
+        1000.times do |i|
+          verify_output_before_step(i)
+          Progress.step
+        end
+        Progress.stop
+        verify_output_after_stop
+      end
+
+      it "should show valid output when called without title" do
+        Progress(1000)
+        1000.times do |i|
+          verify_output_before_step(i)
+          Progress.step
+        end
+        Progress.stop
+        verify_output_after_stop
       end
     end
-    verify_output_after_stop
+
+    describe 'block' do
+      it "should show valid output when called as Progress.start" do
+        Progress.start('Test', 1000) do
+          1000.times do |i|
+            verify_output_before_step(i)
+            Progress.step
+          end
+        end
+        verify_output_after_stop
+      end
+
+      it "should show valid output when called as Progress" do
+        Progress('Test', 1000) do
+          1000.times do |i|
+            verify_output_before_step(i)
+            Progress.step
+          end
+        end
+        verify_output_after_stop
+      end
+
+      it "should show valid output when called without title" do
+        Progress(1000) do
+          1000.times do |i|
+            verify_output_before_step(i)
+            Progress.step
+          end
+        end
+        verify_output_after_stop
+      end
+    end
   end
+
+  describe 'integrity' do
+    it "should not raise errors on extra Progress.stop" do
+      proc{
+        10.times_with_progress('10') do
+          Progress.start 'simple' do
+            Progress.start 'procedural'
+            Progress.stop
+            Progress.stop
+          end
+          Progress.stop
+        end
+        Progress.stop
+      }.should_not raise_error
+    end
+
+    it "should return result from block" do
+      Progress.start('Test') do
+        'qwerty'
+      end.should == 'qwerty'
+    end
+
+    it "should return result from nested block" do
+      [1, 2, 3].with_progress('a').map do |a|
+        [1, 2, 3].with_progress('b').map do |b|
+          a * b
+        end
+      end.should == [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
+    end
+
+    it "should kill progress on cycle break" do
+      2.times do
+        catch(:lalala) do
+          2.times_with_progress('A') do |a|
+            io_pop.should == "A: ......\n"
+            2.times_with_progress('B') do |b|
+              io_pop.should == "A: ...... > B: ......\n"
+              throw(:lalala)
+            end
+          end
+        end
+        io_pop.should == "A: ......\n\n"
+      end
+    end
+
+    [[2, 2000], [20, 200], [200, 20], [2000, 2]].each do |_a, _b|
+      it "should allow enclosed progress [#{_a}, #{_b}]" do
+        _a.times_with_progress('A') do |a|
+          io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
+          _b.times_with_progress('B') do |b|
+            io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + b / _b.to_f) / _a.to_f * 100.0, b / _b.to_f * 100.0]
+          end
+          io_pop.should == "A: %5.1f%% > B: 100.0%%\n" % [(a + 1) / _a.to_f * 100.0]
+        end
+        io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
+      end
+
+      it "should not overlap outer progress if inner exceeds [#{_a}, #{_b}]" do
+        _a.times_with_progress('A') do |a|
+          io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
+          Progress.start('B', _b) do
+            (_b * 2).times do |b|
+              io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + [b / _b.to_f, 1].min) / _a.to_f * 100.0, b / _b.to_f * 100.0]
+              Progress.step
+            end
+          end
+          io_pop.should == "A: %5.1f%% > B: 200.0%%\n" % [(a + 1) / _a.to_f * 100.0]
+        end
+        io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
+      end
+
+      it "should allow step with block to validly count custom progresses [#{_a}, #{_b}]" do
+        a_step = 99
+        Progress.start('A', _a * 100) do
+          io_pop.should == "A: ......\n"
+          _a.times do |a|
+            Progress.step(a_step) do
+              _b.times_with_progress('B') do |b|
+                io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a * a_step + b / _b.to_f * a_step) / (_a * 100).to_f * 100.0, b / _b.to_f * 100.0]
+              end
+              io_pop.should == "A: %5.1f%% > B: 100.0%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
+            end
+            io_pop.should == "A: %5.1f%%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
+          end
+          Progress.step _a
+        end
+        io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
+      end
+    end
+  end
+
+
+
+
+
+
 
   describe Enumerable do
     before :each do
@@ -62,6 +204,13 @@ describe Progress do
         end
         verify_output_after_stop
       end
+
+      it "should show valid output for each_with_progress without title" do
+        @a.each_with_progress do |n|
+          verify_output_before_step(n)
+        end
+        verify_output_after_stop
+      end
     end
 
     describe 'with each_with_index_and_progress' do
@@ -76,6 +225,13 @@ describe Progress do
 
       it "should show valid output for each_with_progress" do
         @a.each_with_index_and_progress('Test') do |n, i|
+          verify_output_before_step(n)
+        end
+        verify_output_after_stop
+      end
+
+      it "should show valid output for each_with_progress without title" do
+        @a.each_with_index_and_progress do |n, i|
           verify_output_before_step(n)
         end
         verify_output_after_stop
@@ -132,116 +288,13 @@ describe Progress do
         end
         verify_output_after_stop
       end
-    end
-  end
 
-  it "should pipe result from block" do
-    Progress.start('Test') do
-      'qwerty'
-    end.should == 'qwerty'
-  end
-
-  it "should not raise errors on extra Progress.stop" do
-    proc{
-      10.times_with_progress('10') do
-        Progress.start 'simple' do
-          Progress.start 'procedural'
-          Progress.stop
-          Progress.stop
-        end
-        Progress.stop
-      end
-      Progress.stop
-    }.should_not raise_error
-  end
-
-  it "should pipe result from nested block" do
-    [1, 2, 3].with_progress('a').map do |a|
-      [1, 2, 3].with_progress('b').map do |b|
-        a * b
-      end
-    end.should == [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
-  end
-
-  it "should kill progress on cycle break" do
-    2.times do
-      catch(:lalala) do
-        2.times_with_progress('A') do |a|
-          io_pop.should == "A: ......\n"
-          2.times_with_progress('B') do |b|
-            io_pop.should == "A: ...... > B: ......\n"
-            throw(:lalala)
-          end
-        end
-      end
-      io_pop.should == "A: ......\n\n"
-    end
-  end
-
-  [[2, 2000], [20, 200], [200, 20], [2000, 2]].each do |_a, _b|
-    it "should allow enclosed progress [#{_a}, #{_b}]" do
-      _a.times_with_progress('A') do |a|
-        io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
-        _b.times_with_progress('B') do |b|
-          io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + b / _b.to_f) / _a.to_f * 100.0, b / _b.to_f * 100.0]
-        end
-        io_pop.should == "A: %5.1f%% > B: 100.0%%\n" % [(a + 1) / _a.to_f * 100.0]
-      end
-      io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
-    end
-
-    it "should not overlap outer progress if inner exceeds [#{_a}, #{_b}]" do
-      _a.times_with_progress('A') do |a|
-        io_pop.should == "A: #{a == 0 ? '......' : '%5.1f%%'}\n" % [a / _a.to_f * 100.0]
-        Progress.start('B', _b) do
-          (_b * 2).times do |b|
-            io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a + [b / _b.to_f, 1].min) / _a.to_f * 100.0, b / _b.to_f * 100.0]
-            Progress.step
-          end
-        end
-        io_pop.should == "A: %5.1f%% > B: 200.0%%\n" % [(a + 1) / _a.to_f * 100.0]
-      end
-      io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
-    end
-
-    it "should allow step with block to validly count custom progresses [#{_a}, #{_b}]" do
-      a_step = 99
-      Progress.start('A', _a * 100) do
-        io_pop.should == "A: ......\n"
-        _a.times do |a|
-          Progress.step(a_step) do
-            _b.times_with_progress('B') do |b|
-              io_pop.should == "A: #{a == 0 && b == 0 ? '......' : '%5.1f%%'} > B: #{b == 0 ? '......' : '%5.1f%%'}\n" % [(a * a_step + b / _b.to_f * a_step) / (_a * 100).to_f * 100.0, b / _b.to_f * 100.0]
-            end
-            io_pop.should == "A: %5.1f%% > B: 100.0%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
-          end
-          io_pop.should == "A: %5.1f%%\n" % [(a + 1) * a_step.to_f / (100.0 * _a.to_f) * 100.0]
-        end
-        Progress.step _a
-      end
-      io_pop.should == "A: 100.0%\nA: 100.0%\n\n"
-    end
-  end
-
-  describe "using Progress instead of Progress.start" do
-    it "should show valid output for procedural version" do
-      Progress('Test', 1000)
-      1000.times do |i|
-        verify_output_before_step(i)
-        Progress.step
-      end
-      Progress.stop
-      verify_output_after_stop
-    end
-
-    it "should show valid output for block version" do
-      Progress('Test', 1000) do
-        1000.times do |i|
+      it "should show valid output for each_with_progress without title" do
+        1000.times_with_progress do |i|
           verify_output_before_step(i)
-          Progress.step
         end
+        verify_output_after_stop
       end
-      verify_output_after_stop
     end
   end
 end

@@ -27,7 +27,7 @@ module Enumerable
   #   [1, 2, 3].each_with_index_and_progress('Numbers') do |number, index|
   #     sleep(number)
   #   end
-  def each_with_index_and_progress(title, &block)
+  def each_with_index_and_progress(title = nil, &block)
     with_progress(title).each_with_index(&block)
   end
 
