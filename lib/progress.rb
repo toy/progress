@@ -70,6 +70,10 @@ class Progress
     # ==== To force highlight
     #   Progress.highlight = true
     def start(title = nil, total = nil)
+      if levels.empty?
+        @started_at = Time.now
+        @eta = nil
+      end
       levels << new(title, total)
       print_message(true)
       if block_given?
@@ -149,6 +153,26 @@ class Progress
       end
     end
 
+    def eta(completed)
+      now = Time.now
+      if now > @started_at && completed > 0
+        current_eta = @started_at + (now - @started_at) / completed
+        @eta = @eta ? @eta + (current_eta - @eta) * (1 + completed) * 0.5 : current_eta
+        seconds = [@eta - now, 0].max
+        left = case seconds
+        when 0...60
+          '%.0fs' % seconds
+        when 60...3600
+          '%.1fm' % (seconds / 60)
+        when 3600...86400
+          '%.1fh' % (seconds / 3600)
+        else
+          '%.1fd' % (seconds / 86400)
+        end
+        eta_string = " (ETA: #{left})"
+      end
+    end
+
     def print_message(force = false)
       if force || time_to_print?
         inner = 0
@@ -168,8 +192,10 @@ class Progress
           end
           parts_cl << "#{title}#{value}"
         end
-        message = parts.reverse * ' > '
-        message_cl = parts_cl.reverse * ' > '
+
+        eta_string = eta(inner)
+        message = "#{parts.reverse * ' > '}#{eta_string}"
+        message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
 
         unless lines?
           previous_length = @previous_length || 0
