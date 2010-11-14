@@ -85,9 +85,9 @@ class Progress
       end
     end
 
-    def step(steps = 1, &block)
+    def step(num = 1, den = 1, &block)
       if levels.last
-        set(levels.last.current + Float(steps), &block)
+        set(levels.last.current + Float(num) / den, &block)
       elsif block
         block.call
       end
