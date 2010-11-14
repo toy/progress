@@ -7,8 +7,9 @@ class Integer
   def times_with_progress(title = nil)
     Progress.start(title, self) do
       times do |i|
-        yield i
-        Progress.step
+        Progress.step do
+          yield i
+        end
       end
     end
   end

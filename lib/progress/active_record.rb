@@ -4,8 +4,9 @@ if defined?(ActiveRecord::Base)
       def find_each_with_progress(options = {})
         Progress.start(name.tableize, count(options)) do
           find_each do |model|
-            yield model
-            Progress.step
+            Progress.step do
+              yield model
+            end
           end
         end
       end
@@ -13,8 +14,9 @@ if defined?(ActiveRecord::Base)
       def find_in_batches_with_progress(options = {})
         Progress.start(name.tableize, count(options)) do
           find_in_batches do |batch|
-            yield batch
-            Progress.step batch.length
+            Progress.step batch.length do
+              yield batch
+            end
           end
         end
       end
