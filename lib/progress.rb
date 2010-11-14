@@ -110,6 +110,7 @@ class Progress
       if levels.last
         if levels.last.step_if_blank || levels.length == 1
           print_message(true)
+          set_title(nil)
         end
         levels.pop
         if levels.empty?
@@ -175,6 +176,12 @@ class Progress
       end
     end
 
+    def set_title(title)
+      if io_tty?
+        io.print("\e]0;#{title}\a")
+      end
+    end
+
     def print_message(force = false)
       if force || time_to_print?
         inner = 0
@@ -206,6 +213,7 @@ class Progress
         end
 
         lines? ? io.puts(message) : io.print(message)
+        set_title(message_cl)
       end
     end
   end
