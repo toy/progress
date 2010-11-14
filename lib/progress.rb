@@ -98,7 +98,9 @@ class Progress
         ret = if block
           levels.last.step(value - levels.last.current, &block)
         end
-        levels.last.current = Float(value)
+        if levels.last
+          levels.last.current = Float(value)
+        end
         print_message
         ret
       elsif block
