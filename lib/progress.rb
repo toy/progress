@@ -91,7 +91,6 @@ class Progress
       elsif block
         block.call
       end
-      self.note = nil
     end
 
     def set(value, &block)
@@ -103,6 +102,7 @@ class Progress
           levels.last.current = Float(value)
         end
         print_message
+        self.note = nil
         ret
       elsif block
         block.call
@@ -215,7 +215,7 @@ class Progress
         message = "#{parts.reverse * ' > '}#{eta_string}"
         message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
 
-        if note = levels.last.note
+        if note = levels.last && levels.last.note
           message << " - #{note}"
           message_cl << " - #{note}"
         end
