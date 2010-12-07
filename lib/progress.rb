@@ -223,7 +223,7 @@ class Progress
         unless lines?
           previous_length = @previous_length || 0
           @previous_length = message_cl.length
-          message = "#{message}#{' ' * [previous_length - message_cl.length, 0].max}\r"
+          message << "#{' ' * [previous_length - message_cl.length, 0].max}\r"
         end
 
         lines? ? io.puts(message) : io.print(message)
