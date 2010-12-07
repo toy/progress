@@ -4,7 +4,7 @@ class Progress
   include Singleton
 
   module InstanceMethods # :nodoc:
-    attr_accessor :title, :current, :total
+    attr_accessor :title, :current, :total, :note
     attr_reader :current_step
     def initialize(title, total)
       if title.is_a?(Numeric) && total.nil?
@@ -91,6 +91,7 @@ class Progress
       elsif block
         block.call
       end
+      self.note = nil
     end
 
     def set(value, &block)
@@ -118,6 +119,12 @@ class Progress
         if levels.empty?
           io.puts
         end
+      end
+    end
+
+    def note=(s)
+      if levels.last
+        levels.last.note = s
       end
     end
 
@@ -207,6 +214,11 @@ class Progress
         eta_string = eta(inner)
         message = "#{parts.reverse * ' > '}#{eta_string}"
         message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
+
+        if note = levels.last.note
+          message << " - #{note}"
+          message_cl << " - #{note}"
+        end
 
         unless lines?
           previous_length = @previous_length || 0
