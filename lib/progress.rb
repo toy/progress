@@ -220,13 +220,12 @@ class Progress
           message_cl << " - #{note}"
         end
 
-        unless lines?
-          previous_length = @previous_length || 0
-          @previous_length = message_cl.length
-          message << "#{' ' * [previous_length - message_cl.length, 0].max}\r"
+        if lines?
+          io.puts(message)
+        else
+          io << message << "\e[K\r"
         end
 
-        lines? ? io.puts(message) : io.print(message)
         set_title(message_cl)
       end
     end
