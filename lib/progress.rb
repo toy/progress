@@ -75,7 +75,7 @@ class Progress
         @eta = nil
       end
       levels << new(title, total)
-      print_message(true)
+      print_message true
       if block_given?
         begin
           yield
@@ -112,8 +112,8 @@ class Progress
     def stop
       if levels.last
         if levels.last.step_if_blank || levels.length == 1
-          print_message(true)
-          set_title(nil)
+          print_message true
+          set_title nil
         end
         levels.pop
         if levels.empty?
@@ -187,26 +187,23 @@ class Progress
 
     def set_title(title)
       if io_tty?
-        io.print("\e]0;#{title}\a")
+        io.print "\e]0;#{title}\a"
       end
     end
 
     def print_message(force = false)
       if force || time_to_print?
         inner = 0
-        parts = []
-        parts_cl = []
-        levels.reverse.each do |l|
-          current = l.to_f(inner)
-          value = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
-          inner = current
+        parts, parts_cl = [], []
+        levels.reverse.each do |level|
+          inner = current = level.to_f(inner)
+          value = current.zero? ? '......' : "#{'%5.1f' % (current * 100.0)}%"
 
-          title = l.title ? "#{l.title}: " : ''
-          highlighted = "\e[1m#{value}\e[0m"
+          title = level.title ? "#{level.title}: " : nil
           if !highlight? || value == '100.0%'
             parts << "#{title}#{value}"
           else
-            parts << "#{title}#{highlighted}"
+            parts << "#{title}\e[1m#{value}\e[0m"
           end
           parts_cl << "#{title}#{value}"
         end
@@ -221,12 +218,12 @@ class Progress
         end
 
         if lines?
-          io.puts(message)
+          io.puts message
         else
           io << message << "\e[K\r"
         end
 
-        set_title(message_cl)
+        set_title message_cl
       end
     end
   end
