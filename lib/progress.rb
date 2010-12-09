@@ -1,5 +1,28 @@
 require 'singleton'
 
+# ==== Procedural example
+#   Progress.start('Test', 1000)
+#   1000.times{ Progress.step }
+#   Progress.stop
+# ==== Block example
+#   Progress.start('Test', 1000) do
+#     1000.times{ Progress.step }
+#   end
+# ==== Step must not always be one
+#   symbols = []
+#   Progress.start('Input 100 symbols', 100) do
+#     while symbols.length < 100
+#       input = gets.scan(/\S/)
+#       symbols += input
+#       Progress.step input.length
+#     end
+#   end
+# ==== Enclosed block example
+#   [1, 2, 3].each_with_progress('1 2 3') do |one_of_1_2_3|
+#     10.times_with_progress('10') do |one_of_10|
+#       sleep(0.001)
+#     end
+#   end
 class Progress
   include Singleton
 
@@ -39,29 +62,6 @@ class Progress
 
   class << self
     # start progress indication
-    # ==== Procedural example
-    #   Progress.start('Test', 1000)
-    #   1000.times{ Progress.step }
-    #   Progress.stop
-    # ==== Block example
-    #   Progress.start('Test', 1000) do
-    #     1000.times{ Progress.step }
-    #   end
-    # ==== Step must not always be one
-    #   symbols = []
-    #   Progress.start('Input 100 symbols', 100) do
-    #     while symbols.length < 100
-    #       input = gets.scan(/\S/)
-    #       symbols += input
-    #       Progress.step input.length
-    #     end
-    #   end
-    # ==== Enclosed block example
-    #   [1, 2, 3].each_with_progress('1 2 3') do |one_of_1_2_3|
-    #     10.times_with_progress('10') do |one_of_10|
-    #       sleep(0.001)
-    #     end
-    #   end
     def start(title = nil, total = nil)
       if levels.empty?
         @started_at = Time.now
@@ -78,6 +78,7 @@ class Progress
       end
     end
 
+    # step current progress by `num / den`
     def step(num = 1, den = 1, &block)
       if levels.last
         set(levels.last.current + Float(num) / den, &block)
@@ -86,6 +87,7 @@ class Progress
       end
     end
 
+    # set current progress to `value`
     def set(value, &block)
       if levels.last
         ret = if block
@@ -102,6 +104,7 @@ class Progress
       end
     end
 
+    # stop progress
     def stop
       if levels.last
         if levels.last.step_if_blank || levels.length == 1
@@ -115,17 +118,18 @@ class Progress
       end
     end
 
+    # set note (will be shown after progress message)
     def note=(s)
       if levels.last
         levels.last.note = s
       end
     end
 
-    # ==== To output progress as lines (not trying to stay on line)
+    # output progress as lines (not trying to stay on line)
     #   Progress.lines = true
     attr_writer :lines
 
-    # ==== To force highlight
+    # force highlight
     #   Progress.highlight = true
     attr_writer :highlight
 

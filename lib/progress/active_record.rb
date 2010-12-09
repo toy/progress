@@ -1,6 +1,7 @@
 if defined?(ActiveRecord::Base)
   module ActiveRecord
     module BatchesWithProgress
+      # run `find_each` with progress
       def find_each_with_progress(options = {})
         Progress.start(name.tableize, count(options)) do
           find_each do |model|
@@ -11,6 +12,7 @@ if defined?(ActiveRecord::Base)
         end
       end
 
+      # run `find_in_batches` with progress
       def find_in_batches_with_progress(options = {})
         Progress.start(name.tableize, count(options)) do
           find_in_batches do |batch|
