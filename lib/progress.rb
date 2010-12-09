@@ -62,10 +62,6 @@ class Progress
     #       sleep(0.001)
     #     end
     #   end
-    # ==== To output progress as lines (not trying to stay on line)
-    #   Progress.lines = true
-    # ==== To force highlight
-    #   Progress.highlight = true
     def start(title = nil, total = nil)
       if levels.empty?
         @started_at = Time.now
@@ -125,7 +121,13 @@ class Progress
       end
     end
 
-    attr_writer :lines, :highlight # :nodoc:
+    # ==== To output progress as lines (not trying to stay on line)
+    #   Progress.lines = true
+    attr_writer :lines
+
+    # ==== To force highlight
+    #   Progress.highlight = true
+    attr_writer :highlight
 
   private
 
