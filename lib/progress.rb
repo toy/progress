@@ -3,42 +3,39 @@ require 'singleton'
 class Progress
   include Singleton
 
-  module InstanceMethods # :nodoc:
-    attr_accessor :title, :current, :total, :note
-    attr_reader :current_step
-    def initialize(title, total)
-      if title.is_a?(Numeric) && total.nil?
-        title, total = nil, title
-      elsif total.nil?
-        total = 1
-      end
-      @title = title
-      @current = 0.0
-      @total = total == 0.0 ? 1.0 : Float(total)
+  attr_accessor :title, :current, :total, :note
+  attr_reader :current_step
+  def initialize(title, total)
+    if title.is_a?(Numeric) && total.nil?
+      title, total = nil, title
+    elsif total.nil?
+      total = 1
     end
+    @title = title
+    @current = 0.0
+    @total = total == 0.0 ? 1.0 : Float(total)
+  end
 
-    def step_if_blank
-      if current == 0.0 && total == 1.0
-        self.current = 1.0
-      end
-    end
-
-    def to_f(inner)
-      inner = [inner, 1.0].min
-      if current_step
-        inner *= current_step
-      end
-      (current + inner) / total
-    end
-
-    def step(steps)
-      @current_step = steps
-      yield
-    ensure
-      @current_step = nil
+  def step_if_blank
+    if current == 0.0 && total == 1.0
+      self.current = 1.0
     end
   end
-  include InstanceMethods
+
+  def to_f(inner)
+    inner = [inner, 1.0].min
+    if current_step
+      inner *= current_step
+    end
+    (current + inner) / total
+  end
+
+  def step(steps)
+    @current_step = steps
+    yield
+  ensure
+    @current_step = nil
+  end
 
   class << self
     # start progress indication
