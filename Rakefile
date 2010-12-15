@@ -1,7 +1,7 @@
 require 'rake'
 require 'jeweler'
 require 'rake/gem_ghost_task'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 
 name = 'progress'
 
@@ -18,9 +18,8 @@ end
 Jeweler::RubygemsDotOrgTasks.new
 Rake::GemGhostTask.new
 
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_opts = ['--colour --format progress --loadby mtime --reverse']
-  spec.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.rspec_opts = ['--colour --format progress']
+  spec.pattern = 'spec/**/*_spec.rb'
 end
 task :default => :spec
