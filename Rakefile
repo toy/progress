@@ -11,7 +11,7 @@ Jeweler::Tasks.new do |gem|
   gem.summary = %Q{Show progress of long running tasks}
   gem.homepage = "http://github.com/toy/#{name}"
   gem.license = 'MIT'
-  gem.authors = ['Boba Fat']
+  gem.authors = ['Ivan Kuchin']
   gem.add_development_dependency 'jeweler', '~> 1.5.1'
   gem.add_development_dependency 'rake-gem-ghost'
   gem.add_development_dependency 'rspec'
