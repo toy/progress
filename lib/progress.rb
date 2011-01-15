@@ -140,11 +140,7 @@ class Progress
     end
 
     def io
-      unless @io
-        @io = $stderr
-        @io.sync = true
-      end
-      @io
+      @io || $stderr
     end
 
     def io_tty?
