@@ -66,6 +66,13 @@ class Progress
       if levels.empty?
         @started_at = Time.now
         @eta = nil
+        @semaphore = Mutex.new
+        @beeper = Thread.new do
+          loop do
+            sleep 3
+            print_message
+          end
+        end
       end
       levels << new(title, total)
       print_message true
@@ -190,39 +197,51 @@ class Progress
       end
     end
 
+    def lock(force)
+      if force ? @semaphore.lock : @semaphore.try_lock
+        begin
+          yield
+        ensure
+          @semaphore.unlock
+        end
+      end
+    end
+
     def print_message(force = false)
-      if force || time_to_print?
-        inner = 0
-        parts, parts_cl = [], []
-        levels.reverse.each do |level|
-          inner = current = level.to_f(inner)
-          value = current.zero? ? '......' : "#{'%5.1f' % (current * 100.0)}%"
+      lock force do
+        if force || time_to_print?
+          inner = 0
+          parts, parts_cl = [], []
+          levels.reverse.each do |level|
+            inner = current = level.to_f(inner)
+            value = current.zero? ? '......' : "#{'%5.1f' % (current * 100.0)}%"
 
-          title = level.title ? "#{level.title}: " : nil
-          if !highlight? || value == '100.0%'
-            parts << "#{title}#{value}"
-          else
-            parts << "#{title}\e[1m#{value}\e[0m"
+            title = level.title ? "#{level.title}: " : nil
+            if !highlight? || value == '100.0%'
+              parts << "#{title}#{value}"
+            else
+              parts << "#{title}\e[1m#{value}\e[0m"
+            end
+            parts_cl << "#{title}#{value}"
           end
-          parts_cl << "#{title}#{value}"
+
+          eta_string = eta(inner)
+          message = "#{parts.reverse * ' > '}#{eta_string}"
+          message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
+
+          if note = levels.last && levels.last.note
+            message << " - #{note}"
+            message_cl << " - #{note}"
+          end
+
+          if lines?
+            io.puts message
+          else
+            io << message << "\e[K\r"
+          end
+
+          set_title message_cl
         end
-
-        eta_string = eta(inner)
-        message = "#{parts.reverse * ' > '}#{eta_string}"
-        message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
-
-        if note = levels.last && levels.last.note
-          message << " - #{note}"
-          message_cl << " - #{note}"
-        end
-
-        if lines?
-          io.puts message
-        else
-          io << message << "\e[K\r"
-        end
-
-        set_title message_cl
       end
     end
   end
