@@ -1,4 +1,5 @@
 require 'singleton'
+require 'thread'
 
 # ==== Procedural example
 #   Progress.start('Test', 1000)
