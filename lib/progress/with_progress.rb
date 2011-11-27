@@ -1,4 +1,5 @@
 require 'delegate'
+require 'progress'
 
 class Progress
   class WithProgress

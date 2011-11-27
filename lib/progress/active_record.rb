@@ -1,3 +1,5 @@
+require 'progress'
+
 if defined?(ActiveRecord::Base)
   module ActiveRecord
     module BatchesWithProgress
