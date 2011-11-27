@@ -129,6 +129,7 @@ class Progress
         end
         levels.pop
         if levels.empty?
+          @beeper.kill
           io.puts
         end
       end
