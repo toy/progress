@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 describe Progress do
   before :each do
     @io = StringIO.new
-    Progress.stub!(:io).and_return(@io)
+    Progress.instance_variable_set(:@io, @io)
     Progress.stub!(:time_to_print?).and_return(true)
   end
 
