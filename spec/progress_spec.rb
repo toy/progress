@@ -196,16 +196,15 @@ describe Progress do
 
   describe Enumerable do
     before :each do
-      @a = (0...1000).to_a
+      @a = 0...1000
     end
 
-    describe 'with with_progress' do
+    describe 'with_progress' do
       it "should not break each" do
-        a = []
-        @a.with_progress('Test').each do |n|
-          a << n
-        end
-        a.should == @a
+        with, without = [], []
+        @a.with_progress.each{ |n| with << n }
+        @a.each{ |n| without << n }
+        with.should == without
       end
 
       it "should not break find" do
