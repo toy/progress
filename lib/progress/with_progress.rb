@@ -1,43 +1,35 @@
-require 'delegate'
 require 'progress'
 
 class Progress
   class WithProgress
-    attr_reader :object, :title
-    def initialize(object, title)
-      @object = Progress::Enhancer.new(object)
-      @title = title
-    end
-
-    def with_progress(title)
-      self
-    end
-
-    def method_missing(method, *args, &block)
-      Progress.start(title, object.length) do
-        object.send(method, *args, &block)
-      end
-    end
-  end
-
-  class Enhancer < SimpleDelegator
     include Enumerable
-    def each(*args, &block)
-      __getobj__.each(*args) do |*yielded|
-        Progress.step do
-          block.call(*yielded)
+
+    def initialize(enumerable, title)
+      @enumerable, @title = enumerable, title
+    end
+
+    def each
+      Progress.start(@title, length) do
+        @enumerable.each do |object|
+          Progress.step do
+            yield object
+          end
         end
       end
     end
 
     def length
-      if __getobj__.respond_to?(:length) && !__getobj__.is_a?(String)
-        __getobj__.length
-      elsif __getobj__.respond_to?(:to_a)
-        __getobj__.to_a.length
+      if @enumerable.respond_to?(:length) && !@enumerable.is_a?(String)
+        @enumerable.length
+      elsif @enumerable.respond_to?(:to_a)
+        @enumerable.to_a.length
       else
-        __getobj__.inject(0){ |length, obj| length + 1 }
+        @enumerable.inject(0){ |length, obj| length + 1 }
       end
+    end
+
+    def with_progress(title = nil)
+      self
     end
   end
 end
