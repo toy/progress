@@ -108,4 +108,4 @@ ruby )))
 
 ## Copyright
 
-Copyright (c) 2010 Ivan Kuchin. See LICENSE.txt for details.
+Copyright (c) 2010-2011 Ivan Kuchin. See LICENSE.txt for details.
