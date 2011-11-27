@@ -3,11 +3,19 @@ require 'thread'
 
 # ==== Procedural example
 #   Progress.start('Test', 1000)
-#   1000.times{ Progress.step }
+#   1000.times do
+#     Progress.step do
+#       # do something
+#     end
+#   end
 #   Progress.stop
 # ==== Block example
 #   Progress.start('Test', 1000) do
-#     1000.times{ Progress.step }
+#     1000.times do
+#       Progress.step do
+#         # do something
+#       end
+#     end
 #   end
 # ==== Step must not always be one
 #   symbols = []
