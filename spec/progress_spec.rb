@@ -257,7 +257,7 @@ describe Progress do
         a.should == @a
       end
 
-      it "should not break any?" do
+      it "should not break find" do
         @a.with_progress('Hello').find{ |n| n == 100 }.should == @a.find{ |n| n == 100 }
         @a.with_progress('Hello').find{ |n| n == 10000 }.should == @a.find{ |n| n == 10000 }
         default = proc{ 'default' }
@@ -285,10 +285,10 @@ describe Progress do
   describe Integer do
     describe 'with times_with_progress' do
       it "should not break times" do
-        c = 0
+        ii = 0
         1000.times_with_progress('Test') do |i|
-          i.should == c
-          c += 1
+          i.should == ii
+          ii += 1
         end
       end
 
