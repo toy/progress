@@ -199,55 +199,6 @@ describe Progress do
       @a = (0...1000).to_a
     end
 
-    describe 'with each_with_progress' do
-      it "should not break each" do
-        a = []
-        @a.each_with_progress('Test') do |n|
-          a << n
-        end
-        a.should == @a
-      end
-
-      it "should show valid output for each_with_progress" do
-        @a.each_with_progress('Test') do |n|
-          verify_output_before_step(n)
-        end
-        verify_output_after_stop
-      end
-
-      it "should show valid output for each_with_progress without title" do
-        @a.each_with_progress do |n|
-          verify_output_before_step(n)
-        end
-        verify_output_after_stop
-      end
-    end
-
-    describe 'with each_with_index_and_progress' do
-      it "should not break each_with_index" do
-        a = []
-        @a.each_with_index_and_progress('Test') do |n, i|
-          n.should == i
-          a << n
-        end
-        a.should == @a
-      end
-
-      it "should show valid output for each_with_progress" do
-        @a.each_with_index_and_progress('Test') do |n, i|
-          verify_output_before_step(n)
-        end
-        verify_output_after_stop
-      end
-
-      it "should show valid output for each_with_progress without title" do
-        @a.each_with_index_and_progress do |n, i|
-          verify_output_before_step(n)
-        end
-        verify_output_after_stop
-      end
-    end
-
     describe 'with with_progress' do
       it "should not break each" do
         a = []
