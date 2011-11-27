@@ -250,5 +250,11 @@ end
 
 require 'progress/enumerable'
 require 'progress/integer'
-require 'progress/kernel'
 require 'progress/active_record'
+
+module Kernel
+  def Progress(title = nil, total = nil, &block)
+    Progress.start(title, total, &block)
+  end
+  private :Progress
+end
