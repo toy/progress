@@ -1,10 +1,12 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 
 describe Progress do
+  let(:count){ 165 }
+
   before :each do
     @io = StringIO.new
     Progress.instance_variable_set(:@io, @io)
-    Progress.stub!(:time_to_print?).and_return(true)
+    def Progress.time_to_print?; true; end
   end
 
   def io_pop
@@ -19,8 +21,8 @@ describe Progress do
     io_pop.sub(/ \(ETA: \d+.\)$/, '')
   end
 
-  def verify_output_before_step(i)
-    io_pop.should =~ /#{Regexp.quote(i == 0 ? '......' : (i / 10.0).to_s)}/
+  def verify_output_before_step(i, count)
+    io_pop.should =~ /#{Regexp.quote(i == 0 ? '......' : '%5.1f' % (i / count.to_f * 100.0))}/
   end
   def verify_output_after_stop
     io_pop.should =~ /100\.0.*\n$/
@@ -29,9 +31,9 @@ describe Progress do
   describe 'direct usage' do
     describe 'procedural' do
       it "should show valid output when called as Progress.start" do
-        Progress.start('Test', 1000)
-        1000.times do |i|
-          verify_output_before_step(i)
+        Progress.start('Test', count)
+        count.times do |i|
+          verify_output_before_step(i, count)
           Progress.step
         end
         Progress.stop
@@ -39,9 +41,9 @@ describe Progress do
       end
 
       it "should show valid output when called as Progress" do
-        Progress('Test', 1000)
-        1000.times do |i|
-          verify_output_before_step(i)
+        Progress('Test', count)
+        count.times do |i|
+          verify_output_before_step(i, count)
           Progress.step
         end
         Progress.stop
@@ -49,9 +51,9 @@ describe Progress do
       end
 
       it "should show valid output when called without title" do
-        Progress(1000)
-        1000.times do |i|
-          verify_output_before_step(i)
+        Progress(count)
+        count.times do |i|
+          verify_output_before_step(i, count)
           Progress.step
         end
         Progress.stop
@@ -61,9 +63,9 @@ describe Progress do
 
     describe 'block' do
       it "should show valid output when called as Progress.start" do
-        Progress.start('Test', 1000) do
-          1000.times do |i|
-            verify_output_before_step(i)
+        Progress.start('Test', count) do
+          count.times do |i|
+            verify_output_before_step(i, count)
             Progress.step
           end
         end
@@ -71,9 +73,9 @@ describe Progress do
       end
 
       it "should show valid output when called as Progress" do
-        Progress('Test', 1000) do
-          1000.times do |i|
-            verify_output_before_step(i)
+        Progress('Test', count) do
+          count.times do |i|
+            verify_output_before_step(i, count)
             Progress.step
           end
         end
@@ -81,9 +83,9 @@ describe Progress do
       end
 
       it "should show valid output when called without title" do
-        Progress(1000) do
-          1000.times do |i|
-            verify_output_before_step(i)
+        Progress(count) do
+          count.times do |i|
+            verify_output_before_step(i, count)
             Progress.step
           end
         end
@@ -236,22 +238,22 @@ describe Progress do
     describe 'with times_with_progress' do
       it "should not break times" do
         ii = 0
-        1000.times_with_progress('Test') do |i|
+        count.times_with_progress('Test') do |i|
           i.should == ii
           ii += 1
         end
       end
 
       it "should show valid output for each_with_progress" do
-        1000.times_with_progress('Test') do |i|
-          verify_output_before_step(i)
+        count.times_with_progress('Test') do |i|
+          verify_output_before_step(i, count)
         end
         verify_output_after_stop
       end
 
       it "should show valid output for each_with_progress without title" do
-        1000.times_with_progress do |i|
-          verify_output_before_step(i)
+        count.times_with_progress do |i|
+          verify_output_before_step(i, count)
         end
         verify_output_after_stop
       end
