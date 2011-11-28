@@ -4,8 +4,9 @@ class Progress
   class WithProgress
     include Enumerable
 
-    def initialize(enumerable, title)
+    def initialize(enumerable, title, &block)
       @enumerable, @title = enumerable, title
+      each(&block) if block
     end
 
     def each
