@@ -8,7 +8,16 @@ module Enumerable
   #   [1, 2, 3].with_progress('Numbers').each do |number|
   #     # code
   #   end
+  #
   #   [1, 2, 3].with_progress('Numbers').each_cons(2) do |numbers|
+  #     # code
+  #   end
+  #
+  #   (0...100).with_progress('Numbers').select do |numbers|
+  #     # code
+  #   end
+  #
+  #   (0...100).with_progress('Numbers').all? do |numbers|
   #     # code
   #   end
   def with_progress(title = nil, &block)
