@@ -4,11 +4,14 @@ class Progress
   class WithProgress
     include Enumerable
 
+    # initialize with object responding to each, title and optional length
+    # if block is provided, it is passed to each
     def initialize(enumerable, title, length = nil, &block)
       @enumerable, @title, @length = enumerable, title, length
       each(&block) if block
     end
 
+    # each object with progress
     def each
       Progress.start(@title, length) do
         @enumerable.each do |object|
@@ -19,6 +22,7 @@ class Progress
       end
     end
 
+    # determine number of objects
     def length
       @length ||= if @enumerable.respond_to?(:length) && !@enumerable.is_a?(String)
         @enumerable.length
@@ -31,6 +35,7 @@ class Progress
       end
     end
 
+    # returns self but changes title
     def with_progress(title = nil)
       @title = title
       self
