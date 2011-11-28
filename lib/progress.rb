@@ -78,7 +78,7 @@ class Progress
         @semaphore = Mutex.new
         @beeper = Thread.new do
           loop do
-            sleep 3
+            sleep 1
             print_message
           end
         end
@@ -135,7 +135,7 @@ class Progress
       end
     end
 
-    # set note (will be shown after progress message)
+    # set note
     def note=(s)
       if levels.last
         levels.last.note = s
