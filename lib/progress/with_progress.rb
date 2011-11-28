@@ -32,6 +32,7 @@ class Progress
     end
 
     def with_progress(title = nil)
+      @title = title
       self
     end
   end
