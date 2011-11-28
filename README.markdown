@@ -98,6 +98,14 @@ Or if you know that B runs 10 times faster than C:
       end
     end
 
+You can also show note:
+
+    [1, 2, 3].with_progress('Wait').each do |i|
+      sleep 1
+      Progress.note = i
+    end
+
+
 ## REQUIREMENTS:
 
 ruby )))
