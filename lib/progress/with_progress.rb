@@ -22,6 +22,8 @@ class Progress
     def length
       if @enumerable.respond_to?(:length) && !@enumerable.is_a?(String)
         @enumerable.length
+      elsif @enumerable.respond_to?(:count)
+        @enumerable.count
       elsif @enumerable.respond_to?(:to_a)
         @enumerable.to_a.length
       else
