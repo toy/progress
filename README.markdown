@@ -2,11 +2,11 @@
 
 Show progress during console script run.
 
-## Installation:
+## Installation
 
     gem install progress
 
-## SYNOPSIS:
+## Usage
 
     1000.times_with_progress('Counting to 1000') do |i|
       # do something with i
