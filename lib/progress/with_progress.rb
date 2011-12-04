@@ -4,6 +4,8 @@ class Progress
   class WithProgress
     include Enumerable
 
+    attr_reader :enumerable, :title
+
     # initialize with object responding to each, title and optional length
     # if block is provided, it is passed to each
     def initialize(enumerable, title, length = nil, &block)
@@ -37,8 +39,7 @@ class Progress
 
     # returns self but changes title
     def with_progress(title = nil, &block)
-      @title = title
-      block ? each(&block) : self
+      self.class.new(@enumerable, title, @length, &block)
     end
   end
 end

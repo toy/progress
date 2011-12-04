@@ -231,6 +231,22 @@ describe Progress do
         @a.with_progress('Hello').each_cons(3){ |values| with_progress << values }
         without_progress.should == with_progress
       end
+
+      describe "with_progress.with_progress" do
+        it "should not change existing instance" do
+          wp = @a.with_progress('hello')
+          proc{ wp.with_progress('world') }.should_not change(wp, :title)
+        end
+
+        it "should create new instance with different title when called on WithProgress" do
+          wp = @a.with_progress('hello')
+          wp_wp = wp.with_progress('world')
+          wp.title.should == 'hello'
+          wp_wp.title.should == 'world'
+          wp_wp.should_not == wp
+          wp_wp.enumerable.should == wp.enumerable
+        end
+      end
     end
   end
 
