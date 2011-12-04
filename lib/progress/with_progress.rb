@@ -36,9 +36,9 @@ class Progress
     end
 
     # returns self but changes title
-    def with_progress(title = nil)
+    def with_progress(title = nil, &block)
       @title = title
-      self
+      block ? each(&block) : self
     end
   end
 end
