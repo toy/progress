@@ -20,7 +20,7 @@ module Enumerable
   #   (0...100).with_progress('Numbers').all? do |numbers|
   #     # code
   #   end
-  def with_progress(title = nil, &block)
-    Progress::WithProgress.new(self, title, &block)
+  def with_progress(title = nil, length = nil, &block)
+    Progress::WithProgress.new(self, title, length, &block)
   end
 end

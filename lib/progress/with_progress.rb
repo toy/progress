@@ -38,8 +38,8 @@ class Progress
     end
 
     # returns self but changes title
-    def with_progress(title = nil, &block)
-      self.class.new(@enumerable, title, @length, &block)
+    def with_progress(title = nil, length = nil, &block)
+      self.class.new(@enumerable, title, length || @length, &block)
     end
   end
 end
