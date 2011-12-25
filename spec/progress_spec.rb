@@ -247,6 +247,49 @@ describe Progress do
           wp_wp.enumerable.should == wp.enumerable
         end
       end
+
+      describe "calls to each" do
+        class CallsToEach
+          include Enumerable
+
+          COUNT = 100
+        end
+
+        def init_calls_to_each
+          @enum = CallsToEach.new
+          @objects = 10.times.to_a
+          @enum.should_receive(:each).once{ |&block|
+            @objects.each(&block)
+          }
+        end
+
+        it "should call each only one time for object with length" do
+          init_calls_to_each
+          @enum.should_receive(:length).and_return(10)
+          got = []
+          @enum.with_progress.each{ |o| got << o }.should == @enum
+          got.should == @objects
+        end
+
+        it "should call each only one time for object without length" do
+          init_calls_to_each
+          got = []
+          @enum.with_progress.each{ |o| got << o }.should == @enum
+          got.should == @objects
+        end
+
+        it "should call each only one time for String" do
+          @objects = ('a'..'z').map{ |c| "#{c}\n" }
+          str = @objects.join('')
+          str.should_not_receive(:length)
+          str.should_receive(:each).once{ |&block|
+            @objects.each(&block)
+          }
+          got = []
+          str.with_progress.each{ |o| got << o }.should == str
+          got.should == @objects
+        end
+      end
     end
   end
 

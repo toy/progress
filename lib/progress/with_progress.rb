@@ -15,25 +15,23 @@ class Progress
 
     # each object with progress
     def each
+      enumerable, length = case
+      when @length
+        [@enumerable, @length]
+      when !@enumerable.respond_to?(:length) || @enumerable.is_a?(String) || (defined?(StringIO) && @enumerable.is_a?(StringIO)) || (defined?(TempFile) && @enumerable.is_a?(TempFile))
+        elements = @enumerable.each.to_a
+        [elements, elements.length]
+      else
+        [@enumerable, @enumerable.length]
+      end
+
       Progress.start(@title, length) do
-        @enumerable.each do |object|
+        enumerable.each do |object|
           Progress.step do
             yield object
           end
         end
-      end
-    end
-
-    # determine number of objects
-    def length
-      @length ||= if @enumerable.respond_to?(:length) && !@enumerable.is_a?(String)
-        @enumerable.length
-      elsif @enumerable.respond_to?(:count)
-        @enumerable.count
-      elsif @enumerable.respond_to?(:to_a)
-        @enumerable.to_a.length
-      else
-        @enumerable.inject(0){ |length, obj| length + 1 }
+        @enumerable
       end
     end
 
