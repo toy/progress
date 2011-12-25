@@ -76,12 +76,7 @@ class Progress
         @started_at = Time.now
         @eta = nil
         @semaphore = Mutex.new
-        @beeper = Thread.new do
-          loop do
-            sleep 1
-            print_message
-          end
-        end
+        start_beeper
       end
       levels << new(title, total)
       print_message true
@@ -129,7 +124,7 @@ class Progress
         end
         levels.pop
         if levels.empty?
-          @beeper.kill
+          stop_beeper
           io.puts
         end
       end
@@ -217,8 +212,31 @@ class Progress
       end
     end
 
+    def start_beeper
+      @beeper = Thread.new do
+        loop do
+          sleep 10
+          print_message unless Thread.current[:skip]
+        end
+      end
+    end
+
+    def stop_beeper
+      @beeper.kill
+      @beeper = nil
+    end
+
+    def restart_beeper
+      if @beeper
+        @beeper[:skip] = true
+        @beeper.run
+        @beeper[:skip] = false
+      end
+    end
+
     def print_message(force = false)
       lock force do
+        restart_beeper
         if force || time_to_print?
           inner = 0
           parts, parts_cl = [], []
