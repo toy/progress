@@ -130,6 +130,11 @@ class Progress
       end
     end
 
+    # check in block of showing progress
+    def running?
+      !levels.empty?
+    end
+
     # set note
     def note=(s)
       if levels.last
