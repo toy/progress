@@ -8,6 +8,7 @@ describe Progress do
   before :each do
     @io = StringIO.new
     Progress.instance_variable_set(:@io, @io)
+    Progress.stub(:start_beeper)
     def Progress.time_to_print?; true; end
   end
 
