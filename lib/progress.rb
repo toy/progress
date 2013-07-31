@@ -227,8 +227,10 @@ class Progress
     end
 
     def stop_beeper
-      @beeper.kill
-      @beeper = nil
+      if @beeper && @beeper.alive?
+        @beeper.kill
+        @beeper = nil
+      end
     end
 
     def restart_beeper
