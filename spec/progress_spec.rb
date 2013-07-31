@@ -1,4 +1,6 @@
-require File.dirname(__FILE__) + '/spec_helper.rb'
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'rspec'
+require 'progress'
 
 describe Progress do
   let(:count){ 165 }
