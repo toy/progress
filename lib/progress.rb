@@ -181,7 +181,7 @@ class Progress
 
     def eta(completed)
       now = Time.now
-      if now > @started_at && completed > 0
+      if now - @started_at >= 1 && completed > 0
         current_eta = @started_at + (now - @started_at) / completed
         @eta = @eta ? @eta + (current_eta - @eta) * (1 + completed) * 0.5 : current_eta
         seconds = @eta - now
