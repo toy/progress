@@ -2,6 +2,8 @@
 
 Show progress during console script run.
 
+[![Build Status](https://travis-ci.org/toy/progress.png?branch=master)](https://travis-ci.org/toy/progress)
+
 ## Installation
 
     gem install progress
