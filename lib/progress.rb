@@ -284,7 +284,7 @@ end
 
 require 'progress/enumerable'
 require 'progress/integer'
-require 'progress/active_record'
+require 'progress/active_record' if defined?(ActiveRecord::Base)
 
 module Kernel
   def Progress(title = nil, total = nil, &block)
