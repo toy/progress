@@ -72,7 +72,7 @@ class Progress
   class << self
     # start progress indication
     def start(title = nil, total = nil)
-      if levels.empty?
+      unless running?
         @started_at = Time.now
         @eta = nil
         @semaphore = Mutex.new
@@ -91,7 +91,7 @@ class Progress
 
     # step current progress by `num / den`
     def step(num = 1, den = 1, &block)
-      if levels.last
+      if running?
         set(levels.last.current + Float(num) / den, &block)
       elsif block
         block.call
@@ -100,11 +100,11 @@ class Progress
 
     # set current progress to `value`
     def set(value, &block)
-      if levels.last
+      if running?
         ret = if block
           levels.last.step(value - levels.last.current, &block)
         end
-        if levels.last
+        if running?
           levels.last.current = Float(value)
         end
         print_message
@@ -117,13 +117,13 @@ class Progress
 
     # stop progress
     def stop
-      if levels.last
+      if running?
         if levels.last.step_if_blank || levels.length == 1
           print_message true
           set_title nil
         end
         levels.pop
-        if levels.empty?
+        unless running?
           stop_beeper
           io.puts
         end
@@ -137,7 +137,7 @@ class Progress
 
     # set note
     def note=(s)
-      if levels.last
+      if running?
         levels.last.note = s
       end
     end
@@ -264,7 +264,7 @@ class Progress
           message = "#{parts.reverse * ' > '}#{eta_string}"
           message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
 
-          if note = levels.last && levels.last.note
+          if note = running? && levels.last.note
             message << " - #{note}"
             message_cl << " - #{note}"
           end
