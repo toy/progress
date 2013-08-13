@@ -146,9 +146,17 @@ class Progress
     #   Progress.lines = true
     attr_writer :lines
 
+    def lines?
+      @lines.nil? ? !io_tty? : @lines
+    end
+
     # force highlight
     #   Progress.highlight = true
     attr_writer :highlight
+
+    def highlight?
+      @highlight.nil? ? io_tty? : @highlight
+    end
 
   private
 
@@ -162,14 +170,6 @@ class Progress
 
     def io_tty?
       io.tty? || ENV['PROGRESS_TTY']
-    end
-
-    def lines?
-      @lines.nil? ? !io_tty? : @lines
-    end
-
-    def highlight?
-      @highlight.nil? ? io_tty? : @highlight
     end
 
     def time_to_print?
