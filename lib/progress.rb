@@ -287,8 +287,8 @@ require 'progress/integer'
 require 'progress/active_record' if defined?(ActiveRecord::Base)
 
 module Kernel
-  def Progress(title = nil, total = nil, &block)
-    Progress.start(title, total, &block)
+  def Progress(*args, &block)
+    Progress.start(*args, &block)
   end
   private :Progress
 end
