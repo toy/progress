@@ -282,6 +282,8 @@ class Progress
   end
 end
 
+require 'progress/beeper'
+
 require 'progress/enumerable'
 require 'progress/integer'
 require 'progress/active_record' if defined?(ActiveRecord::Base)
