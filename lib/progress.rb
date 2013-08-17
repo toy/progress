@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'singleton'
 require 'thread'
 
