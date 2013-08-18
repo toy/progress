@@ -7,9 +7,7 @@ describe Progress do
   describe "integrity" do
 
     before do
-      @io = double
-      @io.stub(:<<)
-      @io.stub(:tty?).and_return(false)
+      @io = double(:<< => nil, :tty? => false)
       Progress.stub(:io).and_return(@io)
       Progress.stub(:start_beeper)
       Progress.stub(:time_to_print?).and_return(true)
