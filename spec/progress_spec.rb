@@ -4,13 +4,16 @@ require 'progress'
 
 describe Progress do
 
+  before do
+    Progress.stub(:start_beeper)
+    Progress.stub(:time_to_print?).and_return(true)
+  end
+
   describe "integrity" do
 
     before do
-      @io = double(:<< => nil, :tty? => false)
+      @io = double(:<< => nil, :tty? => true)
       Progress.stub(:io).and_return(@io)
-      Progress.stub(:start_beeper)
-      Progress.stub(:time_to_print?).and_return(true)
     end
 
     it "should return result from start block" do
@@ -149,7 +152,7 @@ describe Progress do
 
     describe Integer do
 
-      let(:count){ 666 }
+      let(:count){ 108 }
 
       it "should not break times_with_progress" do
         reference = count.times
