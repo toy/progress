@@ -41,6 +41,22 @@ describe Progress do
       end.should == [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
     end
 
+    it "should not raise errors on extra step or stop" do
+      proc{
+        3.times_with_progress do
+          Progress.start 'simple' do
+            Progress.step
+            Progress.step
+            Progress.step
+          end
+          Progress.step
+          Progress.stop
+        end
+        Progress.step
+        Progress.stop
+      }.should_not raise_error
+    end
+
   end
 
 end
