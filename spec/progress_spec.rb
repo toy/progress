@@ -149,7 +149,7 @@ describe Progress do
             end
           end
         end
-        io_pop.should == "A: ......\n"
+        io_pop.should == "A: ...... (elapsed: 0s)\n"
       end
     end
 
@@ -162,7 +162,7 @@ describe Progress do
           end
           io_pop_no_eta.should == "A: %5.1f%% > B: 100.0%%\n" % [(a + 1) / _a.to_f * 100.0]
         end
-        io_pop.should == "A: 100.0%\nA: 100.0%\n"
+        io_pop.should == "A: 100.0%\nA: 100.0% (elapsed: 0s)\n"
       end
 
       it "should not overlap outer progress if inner exceeds [#{_a}, #{_b}]" do
@@ -176,7 +176,7 @@ describe Progress do
           end
           io_pop_no_eta.should == "A: %5.1f%% > B: 200.0%%\n" % [(a + 1) / _a.to_f * 100.0]
         end
-        io_pop.should == "A: 100.0%\nA: 100.0%\n"
+        io_pop.should == "A: 100.0%\nA: 100.0% (elapsed: 0s)\n"
       end
 
       it "should allow step with block to validly count custom progresses [#{_a}, #{_b}]" do
@@ -194,7 +194,7 @@ describe Progress do
           end
           Progress.step _a
         end
-        io_pop.should == "A: 100.0%\nA: 100.0%\n"
+        io_pop.should == "A: 100.0%\nA: 100.0% (elapsed: 0s)\n"
       end
     end
   end

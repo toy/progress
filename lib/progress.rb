@@ -260,11 +260,14 @@ class Progress
             title_parts << "#{title}#{percent}"
           end
 
-          eta = @eta.left(current)
-          eta_string = " (ETA: #{eta})" if eta
+          timing = if options[:finish]
+            " (elapsed: #{@eta.elapsed})"
+          elsif eta = @eta.left(current)
+            " (ETA: #{eta})"
+          end
 
-          message = "#{parts.reverse * ' > '}#{eta_string}"
-          text_message = "#{title_parts.reverse * ' > '}#{eta_string}"
+          message = "#{parts.reverse * ' > '}#{timing}"
+          text_message = "#{title_parts.reverse * ' > '}#{timing}"
 
           if note = running? && @levels.last.note
             message << " - #{note}"
