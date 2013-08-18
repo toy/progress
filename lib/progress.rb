@@ -220,27 +220,17 @@ class Progress
     end
 
     def start_beeper
-      @beeper = Thread.new do
-        loop do
-          sleep 10
-          print_message unless Thread.current[:skip]
-        end
+      @beeper = Beeper.new(10) do
+        print_message
       end
     end
 
     def stop_beeper
-      if @beeper && @beeper.alive?
-        @beeper.kill
-        @beeper = nil
-      end
+      @beeper.stop if @beeper
     end
 
     def restart_beeper
-      if @beeper
-        @beeper[:skip] = true
-        @beeper.run
-        @beeper[:skip] = false
-      end
+      @beeper.restart if @beeper
     end
 
     def print_message(force = false)
