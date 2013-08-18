@@ -285,6 +285,7 @@ class Progress
 end
 
 require 'progress/beeper'
+require 'progress/eta'
 
 require 'progress/enumerable'
 require 'progress/integer'
