@@ -15,15 +15,8 @@ class Progress
 
     # each object with progress
     def each
-      enumerable, length = case
-      when @length
-        [@enumerable, @length]
-      when !@enumerable.respond_to?(:length) || @enumerable.is_a?(String) || (defined?(StringIO) && @enumerable.is_a?(StringIO)) || (defined?(TempFile) && @enumerable.is_a?(TempFile))
-        elements = @enumerable.each.to_a
-        [elements, elements.length]
-      else
-        [@enumerable, @enumerable.length]
-      end
+      enumerable = resolve_enumerable
+      length = @length || enumerable.length
 
       Progress.start(@title, length) do
         enumerable.each do |object|
@@ -38,6 +31,23 @@ class Progress
     # returns self but changes title
     def with_progress(title = nil, length = nil, &block)
       self.class.new(@enumerable, title, length || @length, &block)
+    end
+
+  private
+
+    def resolve_enumerable
+      case
+      when @length
+        @enumerable
+      when
+            !@enumerable.respond_to?(:length),
+            @enumerable.is_a?(String),
+            defined?(StringIO) && @enumerable.is_a?(StringIO),
+            defined?(TempFile) && @enumerable.is_a?(TempFile)
+        @enumerable.each.to_a
+      else
+        @enumerable
+      end
     end
   end
 end
