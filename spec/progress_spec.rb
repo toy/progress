@@ -5,6 +5,10 @@ require 'progress'
 describe Progress do
 
   before do
+    Progress.stay_on_line = true
+    Progress.highlight = true
+    Progress.set_terminal_title = true
+
     Progress.stub(:start_beeper)
     Progress.stub(:time_to_print?).and_return(true)
   end
