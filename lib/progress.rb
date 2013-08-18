@@ -37,51 +37,76 @@ require 'thread'
 class Progress
   include Singleton
 
-  attr_accessor :title, :current, :total, :note
-  attr_reader :current_step
-  def initialize(title, total)
-    if title.is_a?(Numeric) && total.nil?
-      title, total = nil, title
-    elsif total.nil?
-      total = 1
+  attr_reader :total
+  attr_reader :current
+  attr_reader :title
+  attr_accessor :note
+  def initialize(total, title)
+    if !total.kind_of?(Numeric) && (title.nil? || title.kind_of?(Numeric))
+      total, title = title, total
     end
-    @title = title
-    @current = 0.0
-    @total = total == 0.0 ? 1.0 : Float(total)
-  end
+    total = total && total != 0 ? Float(total) : 1.0
 
-  def step_if_blank
-    if current == 0.0 && total == 1.0
-      self.current = 1.0
-    end
+    @total = total
+    @current = 0.0
+    @title = title
   end
 
   def to_f(inner)
-    inner = [inner, 1.0].min
-    if current_step
-      inner *= current_step
-    end
+    inner = 1.0 if inner > 1.0
+    inner *= @step if @step
     (current + inner) / total
   end
 
-  def step(steps)
-    @current_step = steps
-    yield
-  ensure
-    @current_step = nil
+  def step(step, note)
+    if !step.kind_of?(Numeric)
+      step, note = nil, step
+    end
+    step = 1 if step.nil?
+
+    @step = step
+    @note = note
+    ret = yield if block_given?
+    Thread.exclusive do
+      @current += step
+    end
+    ret
   end
 
+  def set(new_current, note)
+    @step = new_current - @current
+    @note = note
+    ret = yield if block_given?
+    Thread.exclusive do
+      @current = new_current
+    end
+    ret
+  end
+
+  @lock = Mutex.new
   class << self
+
     # start progress indication
-    def start(title = nil, total = nil)
-      unless running?
-        @started_at = Time.now
-        @eta = nil
-        @semaphore = Mutex.new
-        start_beeper
+    def start(total = nil, title = nil)
+      lock do
+        if running?
+          unless @started_in == Thread.current
+            warn 'Can\'t start inner progress in different thread'
+            if block_given?
+              return yield
+            else
+              return
+            end
+          end
+        else
+          @started_in = Thread.current
+          @eta = Eta.new
+          start_beeper
+        end
+        @levels ||= []
+        @levels.push new(total, title)
       end
-      levels << new(title, total)
-      print_message true
+      print_message :force => true
       if block_given?
         begin
           yield
@@ -91,26 +116,22 @@ class Progress
       end
     end
 
-    # step current progress by `num / den`
-    def step(num = 1, den = 1, &block)
+    # step current progress
+    def step(step = nil, note = nil, &block)
       if running?
-        set(levels.last.current + Float(num) / den, &block)
+        ret = @levels.last.step(step, note, &block)
+        print_message
+        ret
       elsif block
         block.call
       end
     end
 
-    # set current progress to `value`
-    def set(value, &block)
+    # set value of current progress
+    def set(new_current, note = nil, &block)
       if running?
-        ret = if block
-          levels.last.step(value - levels.last.current, &block)
-        end
-        if running?
-          levels.last.current = Float(value)
-        end
+        ret = @levels.last.set(new_current, note, &block)
         print_message
-        self.note = nil
         ret
       elsif block
         block.call
@@ -120,50 +141,67 @@ class Progress
     # stop progress
     def stop
       if running?
-        if levels.last.step_if_blank || levels.length == 1
-          print_message true
-          set_title nil
-        end
-        levels.pop
-        unless running?
+        if @levels.length == 1
+          print_message :force => true, :finish => true
+          set_terminal_title nil
           stop_beeper
-          io.puts
         end
+        @levels.pop
       end
     end
 
-    # check in block of showing progress
+    # check if progress was started
     def running?
-      !levels.empty?
+      @levels && !@levels.empty?
     end
 
     # set note
-    def note=(s)
+    def note=(note)
       if running?
-        levels.last.note = s
+        @levels.last.note = note
       end
     end
 
-    # output progress as lines (not trying to stay on line)
-    #   Progress.lines = true
-    attr_writer :lines
-
-    def lines?
-      @lines.nil? ? !io_tty? : @lines
+    # stay on one line
+    def stay_on_line?
+      @stay_on_line.nil? ? io_tty? : @stay_on_line
     end
 
-    # force highlight
-    #   Progress.highlight = true
-    attr_writer :highlight
+    # explicitly set staying on one line [true/false/nil]
+    def stay_on_line=(value)
+      @stay_on_line = true && value
+    end
 
+    # highlight output using control characters
     def highlight?
       @highlight.nil? ? io_tty? : @highlight
     end
 
+    # explicitly set highlighting [true/false/nil]
+    def highlight=(value)
+      @highlight = true && value
+    end
+
+    # show progerss in terminal title
+    def set_terminal_title?
+      @set_terminal_title.nil? ? io_tty? : @set_terminal_title
+    end
+
+    # explicitly set showing progress in terminal title [true/false/nil]
+    def set_terminal_title=(value)
+      @set_terminal_title = true && value
+    end
+
   private
 
-    def levels
-      @levels ||= []
+    def lock(force = true)
+      if force ? @lock.lock : @lock.try_lock
+        begin
+          yield
+        ensure
+          @lock.unlock
+        end
+      end
     end
 
     def io
@@ -174,48 +212,10 @@ class Progress
       io.tty? || ENV['PROGRESS_TTY']
     end
 
-    def time_to_print?
-      if !@previous || @previous < Time.now - 0.3
-        @previous = Time.now
-        true
-      end
-    end
-
-    def eta(completed)
-      now = Time.now
-      if now - @started_at >= 1 && completed > 0
-        current_eta = @started_at + (now - @started_at) / completed
-        @eta = @eta ? @eta + (current_eta - @eta) * (1 + completed) * 0.5 : current_eta
-        seconds = @eta - now
-        if seconds > 0
-          left = case seconds
-          when 0...60
-            '%.0fs' % seconds
-          when 60...3600
-            '%.1fm' % (seconds / 60)
-          when 3600...86400
-            '%.1fh' % (seconds / 3600)
-          else
-            '%.1fd' % (seconds / 86400)
-          end
-          eta_string = " (ETA: #{left})"
-        end
-      end
-    end
-
-    def set_title(title)
-      if io_tty?
-        io.print "\e]0;#{title}\a"
-      end
-    end
-
-    def lock(force)
-      if force ? @semaphore.lock : @semaphore.try_lock
-        begin
-          yield
-        ensure
-          @semaphore.unlock
-        end
+    def set_terminal_title(title)
+      if set_terminal_title?
+        title = title && title.to_s.gsub("\a", '␇')
+        io << "\e]0;#{title}\a"
       end
     end
 
@@ -233,44 +233,53 @@ class Progress
       @beeper.restart if @beeper
     end
 
-    def print_message(force = false)
+    def time_to_print?
+      !@next_time_to_print || @next_time_to_print <= Time.now
+    end
+
+    def print_message(options = {})
+      force = options[:force]
       lock force do
-        restart_beeper
         if force || time_to_print?
-          inner = 0
-          parts, parts_cl = [], []
-          levels.reverse.each do |level|
-            inner = current = level.to_f(inner)
-            value = current.zero? ? '......' : "#{'%5.1f' % (current * 100.0)}%"
+          @next_time_to_print = Time.now + 0.3
+          restart_beeper
 
-            title = level.title ? "#{level.title}: " : nil
-            if !highlight? || value == '100.0%'
-              parts << "#{title}#{value}"
+          current = 0
+          parts = []
+          title_parts = []
+          @levels.reverse.each do |level|
+            current = level.to_f(current)
+
+            percent = current == 0 ? '......' : "#{'%5.1f' % (current * 100.0)}%"
+            title = level.title && "#{level.title}: "
+            if !highlight? || percent == '100.0%'
+              parts << "#{title}#{percent}"
             else
-              parts << "#{title}\e[1m#{value}\e[0m"
+              parts << "#{title}\e[1m#{percent}\e[0m"
             end
-            parts_cl << "#{title}#{value}"
+            title_parts << "#{title}#{percent}"
           end
 
-          eta_string = eta(inner)
+          eta = @eta.left(current)
+          eta_string = " (ETA: #{eta})" if eta
+
           message = "#{parts.reverse * ' > '}#{eta_string}"
-          message_cl = "#{parts_cl.reverse * ' > '}#{eta_string}"
+          text_message = "#{title_parts.reverse * ' > '}#{eta_string}"
 
-          if note = running? && levels.last.note
+          if note = running? && @levels.last.note
             message << " - #{note}"
-            message_cl << " - #{note}"
+            text_message << " - #{note}"
           end
 
-          if lines?
-            io.puts message
-          else
-            io << message << "\e[K\r"
-          end
+          message = "\r#{message}\e[K" if stay_on_line?
+          message << "\n" if !stay_on_line? || options[:finish]
+          io << message
 
-          set_title message_cl
+          set_terminal_title text_message
         end
       end
     end
+
   end
 end
 
