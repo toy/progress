@@ -178,4 +178,160 @@ describe Progress do
 
   end
 
+  describe "output" do
+
+    class ChunkIo
+      attr_reader :chunks
+      def initialize
+        @chunks = []
+      end
+
+      def <<(data)
+        @chunks << data.to_s
+      end
+    end
+
+    def stub_progress_io(klass)
+      io = klass.new
+      io.stub(:tty?).and_return(true)
+      Progress.stub(:io).and_return(io)
+      io
+    end
+
+    describe "validity" do
+
+      def run_example_progress
+        Progress.start 5, 'Test' do
+          Progress.step 2, 'simle'
+
+          Progress.step 2, 'times' do
+            3.times.with_progress {}
+          end
+
+          Progress.step 'enum' do
+            3.times.to_a.with_progress {}
+          end
+        end
+      end
+
+      def title(s)
+        "\e]0;#{s}\a"
+      end
+
+      def hl(s)
+        "\e[1m#{s}\e[0m"
+      end
+
+      def on_line(s)
+        "\r" + s + "\e[K"
+      end
+
+      def line(s)
+        s + "\n"
+      end
+
+      it "should produce valid output when staying on line" do
+        Progress.stay_on_line = true
+
+        @io = stub_progress_io(ChunkIo)
+        run_example_progress
+
+        @io.chunks.should == [
+          on_line("Test: #{hl '......'}"),                      title('Test: ......'),
+          on_line("Test: #{hl ' 40.0%'} - simle"),              title('Test:  40.0% - simle'),
+          on_line("Test: #{hl ' 40.0%'} > #{hl '......'}"),     title('Test:  40.0% > ......'),
+          on_line("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"),     title('Test:  53.3% >  33.3%'),
+          on_line("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"),     title('Test:  66.7% >  66.7%'),
+          on_line("Test: #{hl ' 80.0%'} > 100.0%"),             title('Test:  80.0% > 100.0%'),
+          on_line("Test: #{hl ' 80.0%'} - times"),              title('Test:  80.0% - times'),
+          on_line("Test: #{hl ' 80.0%'} > #{hl '......'}"),     title('Test:  80.0% > ......'),
+          on_line("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"),     title('Test:  86.7% >  33.3%'),
+          on_line("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"),     title('Test:  93.3% >  66.7%'),
+          on_line("Test: 100.0% > 100.0%"),                     title('Test: 100.0% > 100.0%'),
+          on_line("Test: 100.0% - enum"),                       title('Test: 100.0% - enum'),
+          on_line("Test: 100.0% (elapsed: 0s) - enum") + "\n",  title(''),
+        ]
+      end
+
+      it "should produce valid output when not staying on line" do
+        Progress.stay_on_line = false
+
+        @io = stub_progress_io(ChunkIo)
+        run_example_progress
+
+        @io.chunks.should == [
+          line("Test: #{hl '......'}"),                  title('Test: ......'),
+          line("Test: #{hl ' 40.0%'} - simle"),          title('Test:  40.0% - simle'),
+          line("Test: #{hl ' 40.0%'} > #{hl '......'}"), title('Test:  40.0% > ......'),
+          line("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"), title('Test:  53.3% >  33.3%'),
+          line("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"), title('Test:  66.7% >  66.7%'),
+          line("Test: #{hl ' 80.0%'} > 100.0%"),         title('Test:  80.0% > 100.0%'),
+          line("Test: #{hl ' 80.0%'} - times"),          title('Test:  80.0% - times'),
+          line("Test: #{hl ' 80.0%'} > #{hl '......'}"), title('Test:  80.0% > ......'),
+          line("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"), title('Test:  86.7% >  33.3%'),
+          line("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"), title('Test:  93.3% >  66.7%'),
+          line("Test: 100.0% > 100.0%"),                 title('Test: 100.0% > 100.0%'),
+          line("Test: 100.0% - enum"),                   title('Test: 100.0% - enum'),
+          line("Test: 100.0% (elapsed: 0s) - enum"),     title(''),
+        ]
+      end
+
+    end
+
+    describe "different call styles" do
+
+      let(:count_a){ 13 }
+      let(:count_b){ 108 }
+
+      before do
+        reference_io = stub_progress_io(StringIO)
+        count_a.times.with_progress('Test') do
+          count_b.times.with_progress {}
+        end
+        @reference_output = reference_io.string
+
+        @io = stub_progress_io(StringIO)
+      end
+
+      it "should output same when called without block" do
+        Progress(count_a, 'Test')
+        count_a.times do
+          Progress.step do
+            Progress.start(count_b)
+            count_b.times do
+              Progress.step
+            end
+            Progress.stop
+          end
+        end
+        Progress.stop
+        @io.string.should == @reference_output
+      end
+
+      it "should output same when called with block" do
+        Progress(count_a, 'Test') do
+          count_a.times do
+            Progress.step do
+              Progress.start(count_b) do
+                count_b.times do
+                  Progress.step
+                end
+              end
+            end
+          end
+        end
+        @io.string.should == @reference_output
+      end
+
+      it "should output same when called using with_progress on list" do
+        count_a.times.to_a.with_progress('Test') do
+          count_b.times.to_a.with_progress {}
+        end
+        @io.string.should == @reference_output
+      end
+
+    end
+
+  end
+
 end
