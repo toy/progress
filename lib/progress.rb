@@ -143,7 +143,6 @@ class Progress
       if running?
         if @levels.length == 1
           print_message :force => true, :finish => true
-          set_terminal_title nil
           stop_beeper
         end
         @levels.pop
@@ -212,13 +211,6 @@ class Progress
       io.tty? || ENV['PROGRESS_TTY']
     end
 
-    def set_terminal_title(title)
-      if set_terminal_title?
-        title = title && title.to_s.gsub("\a", '␇')
-        io << "\e]0;#{title}\a"
-      end
-    end
-
     def start_beeper
       @beeper = Beeper.new(10) do
         print_message
@@ -278,7 +270,10 @@ class Progress
           message << "\n" if !stay_on_line? || options[:finish]
           io << message
 
-          set_terminal_title text_message
+          if set_terminal_title?
+            title = options[:finish] ? nil : text_message.to_s.gsub("\a", '␇')
+            io << "\e]0;#{title}\a"
+          end
         end
       end
     end
