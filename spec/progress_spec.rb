@@ -281,7 +281,7 @@ describe Progress do
     describe "different call styles" do
 
       let(:count_a){ 13 }
-      let(:count_b){ 108 }
+      let(:count_b){ 17 }
 
       before do
         reference_io = stub_progress_io(StringIO)
