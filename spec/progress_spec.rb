@@ -11,6 +11,8 @@ describe Progress do
 
     Progress.stub(:start_beeper)
     Progress.stub(:time_to_print?).and_return(true)
+    Progress.stub(:eta)
+    Progress.stub(:elapsed).and_return('0s')
   end
 
   describe "integrity" do

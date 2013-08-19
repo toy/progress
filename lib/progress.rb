@@ -229,6 +229,14 @@ class Progress
       !@next_time_to_print || @next_time_to_print <= Time.now
     end
 
+    def eta(current)
+      @eta.left(current)
+    end
+
+    def elapsed
+      @eta.elapsed
+    end
+
     def print_message(options = {})
       force = options[:force]
       lock force do
@@ -253,9 +261,9 @@ class Progress
           end
 
           timing = if options[:finish]
-            " (elapsed: #{@eta.elapsed})"
-          elsif eta = @eta.left(current)
-            " (ETA: #{eta})"
+            " (elapsed: #{elapsed})"
+          elsif eta_ = eta(current)
+            " (ETA: #{eta_})"
           end
 
           message = "#{parts.reverse * ' > '}#{timing}"
