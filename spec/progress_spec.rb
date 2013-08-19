@@ -121,6 +121,14 @@ describe Progress do
 
         describe "calls to each" do
 
+          def without_warnings
+            verbosity = $VERBOSE
+            $VERBOSE = nil
+            result = yield
+            $VERBOSE = verbosity
+            result
+          end
+
           it "should call each only once for Array" do
             enum = [1, 2, 3]
             enum.should_receive(:each).once
@@ -143,20 +151,26 @@ describe Progress do
             it "should call each only once for String" do
               enum = "a\nb\nc"
               enum.should_receive(:each).once
-              enum.with_progress.each{ }.should == enum
+              without_warnings do
+                enum.with_progress.each{ }.should == enum
+              end
             end
           end
 
           it "should call each only once for File (IO)" do
             enum = File.open(__FILE__)
             enum.should_receive(:each).once
-            enum.with_progress.each{ }.should == enum
+            without_warnings do
+              enum.with_progress.each{ }.should == enum
+            end
           end
 
           it "should call each only once for StringIO" do
             enum = StringIO.new("a\nb\nc")
             enum.should_receive(:each).once
-            enum.with_progress.each{ }.should == enum
+            without_warnings do
+              enum.with_progress.each{ }.should == enum
+            end
           end
 
         end
