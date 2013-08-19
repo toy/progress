@@ -121,33 +121,42 @@ describe Progress do
 
         describe "calls to each" do
 
-          class CallsToEach
-            include Enumerable
-
-            COUNT = 100
+          it "should call each only once for Array" do
+            enum = [1, 2, 3]
+            enum.should_receive(:each).once
+            enum.with_progress.each{ }.should == enum
           end
 
-          def init_calls_to_each
-            @enum = CallsToEach.new
-            @objects = 10.times.to_a
-            @enum.should_receive(:each).once{ |&block|
-              @objects.each(&block)
-            }
+          it "should call each only once for Hash" do
+            enum = {1 => 1, 2 => 2, 3 => 3}
+            enum.should_receive(:each).once
+            enum.with_progress.each{ }.should == enum
           end
 
-          it "should call each only one time for object with length" do
-            init_calls_to_each
-            @enum.should_receive(:length).and_return(10)
-            got = []
-            @enum.with_progress.each{ |o| got << o }.should == @enum
-            got.should == @objects
+          it "should call each only once for Set" do
+            enum = [1, 2, 3].to_set
+            enum.should_receive(:each).once
+            enum.with_progress.each{ }.should == enum
           end
 
-          it "should call each only one time for object without length" do
-            init_calls_to_each
-            got = []
-            @enum.with_progress.each{ |o| got << o }.should == @enum
-            got.should == @objects
+          if ''.is_a?(Enumerable) # ruby1.8
+            it "should call each only once for String" do
+              enum = "a\nb\nc"
+              enum.should_receive(:each).once
+              enum.with_progress.each{ }.should == enum
+            end
+          end
+
+          it "should call each only once for File (IO)" do
+            enum = File.open(__FILE__)
+            enum.should_receive(:each).once
+            enum.with_progress.each{ }.should == enum
+          end
+
+          it "should call each only once for StringIO" do
+            enum = StringIO.new("a\nb\nc")
+            enum.should_receive(:each).once
+            enum.with_progress.each{ }.should == enum
           end
 
         end

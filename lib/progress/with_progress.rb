@@ -17,8 +17,30 @@ class Progress
 
     # each object with progress
     def each
-      enumerable = resolve_enumerable
-      length = @length || enumerable.length
+      enumerable = case
+      when @length
+        @enumerable
+      when
+            @enumerable.is_a?(String),
+            @enumerable.is_a?(IO),
+            Object.const_defined?(:StringIO) && @enumerable.is_a?(StringIO),
+            Object.const_defined?(:TempFile) && @enumerable.is_a?(TempFile)
+        warn "Progress: collecting elements for instance of class #{@enumerable.class}"
+        @enumerable.each.to_a
+      else
+        @enumerable
+      end
+
+      length = case
+      when @length
+        @length
+      when enumerable.respond_to?(:size)
+        enumerable.size
+      when enumerable.respond_to?(:length)
+        enumerable.length
+      else
+        enumerable.count
+      end
 
       Progress.start(@title, length) do
         enumerable.each do |object|
@@ -45,21 +67,5 @@ class Progress
       @enumerable = obj
     end
 
-  private
-
-    def resolve_enumerable
-      case
-      when @length
-        @enumerable
-      when
-            !@enumerable.respond_to?(:length),
-            @enumerable.is_a?(String),
-            defined?(StringIO) && @enumerable.is_a?(StringIO),
-            defined?(TempFile) && @enumerable.is_a?(TempFile)
-        @enumerable.each.to_a
-      else
-        @enumerable
-      end
-    end
   end
 end
