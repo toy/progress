@@ -1,7 +1,8 @@
 require 'progress'
+require 'delegate'
 
 class Progress
-  class WithProgress
+  class WithProgress < Delegator
     include Enumerable
 
     attr_reader :enumerable, :title
@@ -9,6 +10,7 @@ class Progress
     # initialize with object responding to each, title and optional length
     # if block is provided, it is passed to each
     def initialize(enumerable, title, length = nil, &block)
+      super(enumerable)
       @enumerable, @title, @length = enumerable, title, length
       each(&block) if block
     end
@@ -31,6 +33,16 @@ class Progress
     # returns self but changes title
     def with_progress(title = nil, length = nil, &block)
       self.class.new(@enumerable, title, length || @length, &block)
+    end
+
+  protected
+
+    def __getobj__
+      @enumerable
+    end
+
+    def __setobj__(obj)
+      @enumerable = obj
     end
 
   private
