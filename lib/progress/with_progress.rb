@@ -60,6 +60,8 @@ class Progress
     # befriend with in_threads gem
     def in_threads(*args, &block)
       @enumerable.in_threads(*args).with_progress(@title, @length, &block)
+    rescue
+      super
     end
 
   protected
