@@ -104,27 +104,27 @@ NOTE: you will get WRONG progress if you use something like this:
 But you can use this:
 
     10.times_with_progress('A') do |time|
-      Progress.step 1, 2 do
+      Progress.step 5 do
         10.times_with_progress('B') do
           # code
         end
       end
-      Progress.step 1, 2 do
+      Progress.step 5 do
         10.times_with_progress('C') do
           # code
         end
       end
     end
 
-Or if you know that B runs 10 times faster than C:
+Or if you know that B runs 9 times faster than C:
 
     10.times_with_progress('A') do |time|
-      Progress.step 1, 11 do
+      Progress.step 1 do
         10.times_with_progress('B') do
           # code
         end
       end
-      Progress.step 10, 11 do
+      Progress.step 9 do
         10.times_with_progress('C') do
           # code
         end
