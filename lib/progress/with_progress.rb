@@ -57,6 +57,11 @@ class Progress
       self.class.new(@enumerable, title, length || @length, &block)
     end
 
+    # befriend with in_threads gem
+    def in_threads(*args, &block)
+      @enumerable.in_threads(*args).with_progress(@title, @length, &block)
+    end
+
   protected
 
     def __getobj__
