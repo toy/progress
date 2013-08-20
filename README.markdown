@@ -133,4 +133,4 @@ Or if you know that B runs 9 times faster than C:
 
 ## Copyright
 
-Copyright (c) 2010-2011 Ivan Kuchin. See LICENSE.txt for details.
+Copyright (c) 2010-2013 Ivan Kuchin. See LICENSE.txt for details.
