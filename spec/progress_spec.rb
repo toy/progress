@@ -133,26 +133,26 @@ describe Progress do
 
           it "should call each only once for Array" do
             enum = [1, 2, 3]
-            enum.should_receive(:each).once
+            enum.should_receive(:each).once.and_return(enum)
             enum.with_progress.each{ }.should == enum
           end
 
           it "should call each only once for Hash" do
             enum = {1 => 1, 2 => 2, 3 => 3}
-            enum.should_receive(:each).once
+            enum.should_receive(:each).once.and_return(enum)
             enum.with_progress.each{ }.should == enum
           end
 
           it "should call each only once for Set" do
             enum = [1, 2, 3].to_set
-            enum.should_receive(:each).once
+            enum.should_receive(:each).once.and_return(enum)
             enum.with_progress.each{ }.should == enum
           end
 
           if ''.is_a?(Enumerable) # ruby1.8
             it "should call each only once for String" do
               enum = "a\nb\nc"
-              enum.should_receive(:each).once
+              enum.should_receive(:each).once.and_return(enum)
               without_warnings do
                 enum.with_progress.each{ }.should == enum
               end
@@ -161,7 +161,7 @@ describe Progress do
 
           it "should call each only once for File (IO)" do
             enum = File.open(__FILE__)
-            enum.should_receive(:each).once
+            enum.should_receive(:each).once.and_return(enum)
             without_warnings do
               enum.with_progress.each{ }.should == enum
             end
@@ -169,7 +169,7 @@ describe Progress do
 
           it "should call each only once for StringIO" do
             enum = StringIO.new("a\nb\nc")
-            enum.should_receive(:each).once
+            enum.should_receive(:each).once.and_return(enum)
             without_warnings do
               enum.with_progress.each{ }.should == enum
             end
