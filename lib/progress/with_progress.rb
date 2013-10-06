@@ -85,7 +85,9 @@ class Progress
         end
       else
         Progress.start(@title) do
-          enumerable.send(method, *args)
+          Progress.step do
+            enumerable.send(method, *args)
+          end
         end
       end
     end
