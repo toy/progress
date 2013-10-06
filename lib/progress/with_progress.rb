@@ -1,5 +1,4 @@
 require 'progress'
-require 'delegate'
 
 class Progress
   class WithProgress
@@ -90,14 +89,6 @@ class Progress
           end
         end
       end
-    end
-
-    def __getobj__
-      @enumerable
-    end
-
-    def __setobj__(obj)
-      @enumerable = obj
     end
 
   end
