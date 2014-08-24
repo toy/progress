@@ -58,6 +58,8 @@ class Progress
         @enumerable
       end
 
+      csv = false
+      
       length = case
       when @length
         @length
@@ -65,6 +67,9 @@ class Progress
         enumerable.size
       when enumerable.respond_to?(:length)
         enumerable.length
+      when Object.const_defined?(:CSV) && @enumerable.is_a?(CSV)
+        csv = true
+        enumerable.stat.size
       else
         enumerable.count
       end
@@ -72,8 +77,14 @@ class Progress
       if block
         result = Progress.start(@title, length) do
           enumerable.send(method, *args) do |*block_args|
-            Progress.step do
-              block.call(*block_args)
+            if csv
+              Progress.set(enumerable.pos) do
+                block.call(*block_args)
+              end
+            else
+              Progress.step do
+                block.call(*block_args)
+              end
             end
           end
         end
