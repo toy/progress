@@ -9,24 +9,7 @@ class Progress
 
     # start progress indication
     def start(total = nil, title = nil)
-      lock do
-        if running?
-          unless @started_in == Thread.current
-            warn 'Can\'t start inner progress in different thread'
-            if block_given?
-              return yield
-            else
-              return
-            end
-          end
-        else
-          @started_in = Thread.current
-          @eta = Eta.new
-          start_beeper
-        end
-        @levels ||= []
-        @levels.push new(total, title)
-      end
+      init(total, title)
       print_message :force => true
       return unless block_given?
       begin
@@ -110,6 +93,23 @@ class Progress
     end
 
   private
+
+    def init(total = nil, title = nil)
+      lock do
+        if running?
+          unless @started_in == Thread.current
+            warn 'Can\'t start inner progress in different thread'
+            return block_given? ? yield : nil
+          end
+        else
+          @started_in = Thread.current
+          @eta = Eta.new
+          start_beeper
+        end
+        @levels ||= []
+        @levels.push new(total, title)
+      end
+    end
 
     def lock(force = true)
       if force
