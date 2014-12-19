@@ -19,25 +19,25 @@ describe Progress do
       allow(Progress).to receive(:io).and_return(@io)
     end
 
-    it 'should return result from start block' do
+    it 'returns result from start block' do
       expect(Progress.start('Test') do
         'test'
       end).to eq('test')
     end
 
-    it 'should return result from step block' do
+    it 'returns result from step block' do
       Progress.start 1 do
         expect(Progress.step{ 'test' }).to eq('test')
       end
     end
 
-    it 'should return result from set block' do
+    it 'returns result from set block' do
       Progress.start 1 do
         expect(Progress.set(1){ 'test' }).to eq('test')
       end
     end
 
-    it 'should return result from nested block' do
+    it 'returns result from nested block' do
       expect([1, 2, 3].with_progress.map do |a|
         [1, 2, 3].with_progress.map do |b|
           a * b
@@ -45,7 +45,7 @@ describe Progress do
       end).to eq([[1, 2, 3], [2, 4, 6], [3, 6, 9]])
     end
 
-    it 'should not raise errors on extra step or stop' do
+    it 'does not raise errors on extra step or stop' do
       expect do
         3.times_with_progress do
           Progress.start 'simple' do
@@ -67,7 +67,7 @@ describe Progress do
       end
 
       describe 'with_progress' do
-        it 'should not break each' do
+        it 'does not break each' do
           reference = @a.each
           @a.with_progress.each do |n|
             expect(n).to eq(reference.next)
@@ -75,22 +75,22 @@ describe Progress do
           expect{ reference.next }.to raise_error(StopIteration)
         end
 
-        it 'should not break find' do
+        it 'does not break find' do
           default = proc{ 'default' }
           expect(@a.with_progress.find{ |n| n == 100 }).to eq(@a.find{ |n| n == 100 })
           expect(@a.with_progress.find{ |n| n == 10_000 }).to eq(@a.find{ |n| n == 10_000 })
           expect(@a.with_progress.find(default){ |n| n == 10_000 }).to eq(@a.find(default){ |n| n == 10_000 })
         end
 
-        it 'should not break map' do
+        it 'does not break map' do
           expect(@a.with_progress.map{ |n| n * n }).to eq(@a.map{ |n| n * n })
         end
 
-        it 'should not break grep' do
+        it 'does not break grep' do
           expect(@a.with_progress.grep(100)).to eq(@a.grep(100))
         end
 
-        it 'should not break each_cons' do
+        it 'does not break each_cons' do
           reference = @a.each_cons(3)
           @a.with_progress.each_cons(3) do |values|
             expect(values).to eq(reference.next)
@@ -99,12 +99,12 @@ describe Progress do
         end
 
         describe 'with_progress.with_progress' do
-          it 'should not change existing instance' do
+          it 'does not change existing instance' do
             wp = @a.with_progress('hello')
             expect{ wp.with_progress('world') }.not_to change(wp, :title)
           end
 
-          it 'should create new instance with different title when called on WithProgress' do
+          it 'creates new instance with different title when called on WithProgress' do
             wp = @a.with_progress('hello')
             wp_wp = wp.with_progress('world')
             expect(wp.title).to eq('hello')
@@ -123,26 +123,26 @@ describe Progress do
             result
           end
 
-          it 'should call each only once for Array' do
+          it 'calls each only once for Array' do
             enum = [1, 2, 3]
             expect(enum).to receive(:each).once.and_return(enum)
             expect(enum.with_progress.each{}).to eq(enum)
           end
 
-          it 'should call each only once for Hash' do
+          it 'calls each only once for Hash' do
             enum = {1 => 1, 2 => 2, 3 => 3}
             expect(enum).to receive(:each).once.and_return(enum)
             expect(enum.with_progress.each{}).to eq(enum)
           end
 
-          it 'should call each only once for Set' do
+          it 'calls each only once for Set' do
             enum = [1, 2, 3].to_set
             expect(enum).to receive(:each).once.and_return(enum)
             expect(enum.with_progress.each{}).to eq(enum)
           end
 
           if ''.is_a?(Enumerable) # ruby1.8
-            it 'should call each only once for String' do
+            it 'calls each only once for String' do
               enum = "a\nb\nc"
               expect(enum).to receive(:each).once.and_return(enum)
               without_warnings do
@@ -151,7 +151,7 @@ describe Progress do
             end
           end
 
-          it 'should call each only once for File (IO)' do
+          it 'calls each only once for File (IO)' do
             enum = File.open(__FILE__)
             expect(enum).to receive(:each).once.and_return(enum)
             without_warnings do
@@ -159,7 +159,7 @@ describe Progress do
             end
           end
 
-          it 'should call each only once for StringIO' do
+          it 'calls each only once for StringIO' do
             enum = StringIO.new("a\nb\nc")
             expect(enum).to receive(:each).once.and_return(enum)
             without_warnings do
@@ -173,7 +173,7 @@ describe Progress do
     describe Integer do
       let(:count){ 108 }
 
-      it 'should not break times_with_progress' do
+      it 'does not break times_with_progress' do
         reference = count.times
         count.times_with_progress do |i|
           expect(i).to eq(reference.next)
@@ -181,7 +181,7 @@ describe Progress do
         expect{ reference.next }.to raise_error(StopIteration)
       end
 
-      it 'should not break times.with_progress' do
+      it 'does not break times.with_progress' do
         reference = count.times
         count.times.with_progress do |i|
           expect(i).to eq(reference.next)
@@ -253,7 +253,7 @@ describe Progress do
         [line(s), title(unhl(s))]
       end
 
-      it 'should produce valid output when staying on line' do
+      it 'produces valid output when staying on line' do
         Progress.stay_on_line = true
 
         @io = stub_progress_io(ChunkIo)
@@ -277,7 +277,7 @@ describe Progress do
         ].flatten)
       end
 
-      it 'should produce valid output when not staying on line' do
+      it 'produces valid output when not staying on line' do
         Progress.stay_on_line = false
 
         @io = stub_progress_io(ChunkIo)
@@ -316,7 +316,7 @@ describe Progress do
         @io = stub_progress_io(StringIO)
       end
 
-      it 'should output same when called without block' do
+      it 'outputs same when called without block' do
         Progress(count_a, 'Test')
         count_a.times do
           Progress.step do
@@ -331,7 +331,7 @@ describe Progress do
         expect(@io.string).to eq(@reference_output)
       end
 
-      it 'should output same when called with block' do
+      it 'outputs same when called with block' do
         Progress(count_a, 'Test') do
           count_a.times do
             Progress.step do
@@ -346,7 +346,7 @@ describe Progress do
         expect(@io.string).to eq(@reference_output)
       end
 
-      it 'should output same when called using with_progress on list' do
+      it 'outputs same when called using with_progress on list' do
         count_a.times.to_a.with_progress('Test') do
           count_b.times.to_a.with_progress{}
         end
