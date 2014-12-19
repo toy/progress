@@ -15,8 +15,8 @@ describe Progress do
 
   describe 'integrity' do
     before do
-      @io = double(:<< => nil, :tty? => true)
-      allow(Progress).to receive(:io).and_return(@io)
+      io = double(:<< => nil, :tty? => true)
+      allow(Progress).to receive(:io).and_return(io)
     end
 
     it 'returns result from start block' do
@@ -62,14 +62,12 @@ describe Progress do
     end
 
     describe Enumerable do
-      before :each do
-        @a = 0...1000
-      end
+      let(:enum){ 0...1000 }
 
       describe 'with_progress' do
         it 'does not break each' do
-          reference = @a.each
-          @a.with_progress.each do |n|
+          reference = enum.each
+          enum.with_progress.each do |n|
             expect(n).to eq(reference.next)
           end
           expect{ reference.next }.to raise_error(StopIteration)
@@ -77,22 +75,22 @@ describe Progress do
 
         it 'does not break find' do
           default = proc{ 'default' }
-          expect(@a.with_progress.find{ |n| n == 100 }).to eq(@a.find{ |n| n == 100 })
-          expect(@a.with_progress.find{ |n| n == 10_000 }).to eq(@a.find{ |n| n == 10_000 })
-          expect(@a.with_progress.find(default){ |n| n == 10_000 }).to eq(@a.find(default){ |n| n == 10_000 })
+          expect(enum.with_progress.find{ |n| n == 100 }).to eq(enum.find{ |n| n == 100 })
+          expect(enum.with_progress.find{ |n| n == 10_000 }).to eq(enum.find{ |n| n == 10_000 })
+          expect(enum.with_progress.find(default){ |n| n == 10_000 }).to eq(enum.find(default){ |n| n == 10_000 })
         end
 
         it 'does not break map' do
-          expect(@a.with_progress.map{ |n| n * n }).to eq(@a.map{ |n| n * n })
+          expect(enum.with_progress.map{ |n| n**2 }).to eq(enum.map{ |n| n**2 })
         end
 
         it 'does not break grep' do
-          expect(@a.with_progress.grep(100)).to eq(@a.grep(100))
+          expect(enum.with_progress.grep(100)).to eq(enum.grep(100))
         end
 
         it 'does not break each_cons' do
-          reference = @a.each_cons(3)
-          @a.with_progress.each_cons(3) do |values|
+          reference = enum.each_cons(3)
+          enum.with_progress.each_cons(3) do |values|
             expect(values).to eq(reference.next)
           end
           expect{ reference.next }.to raise_error(StopIteration)
@@ -100,12 +98,12 @@ describe Progress do
 
         describe 'with_progress.with_progress' do
           it 'does not change existing instance' do
-            wp = @a.with_progress('hello')
+            wp = enum.with_progress('hello')
             expect{ wp.with_progress('world') }.not_to change(wp, :title)
           end
 
           it 'creates new instance with different title when called on WithProgress' do
-            wp = @a.with_progress('hello')
+            wp = enum.with_progress('hello')
             wp_wp = wp.with_progress('world')
             expect(wp.title).to eq('hello')
             expect(wp_wp.title).to eq('world')
@@ -203,11 +201,9 @@ describe Progress do
       end
     end
 
-    def stub_progress_io(klass)
-      io = klass.new
+    def stub_progress_io(io)
       allow(io).to receive(:tty?).and_return(true)
       allow(Progress).to receive(:io).and_return(io)
-      io
     end
 
     describe 'validity' do
@@ -256,10 +252,10 @@ describe Progress do
       it 'produces valid output when staying on line' do
         Progress.stay_on_line = true
 
-        @io = stub_progress_io(ChunkIo)
+        stub_progress_io(io = ChunkIo.new)
         run_example_progress
 
-        expect(@io.chunks).to eq([
+        expect(io.chunks).to eq([
           on_line_n_title("Test: #{hl '......'}"),
           on_line_n_title("Test: #{hl ' 40.0%'} - simle"),
           on_line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
@@ -280,10 +276,10 @@ describe Progress do
       it 'produces valid output when not staying on line' do
         Progress.stay_on_line = false
 
-        @io = stub_progress_io(ChunkIo)
+        stub_progress_io(io = ChunkIo.new)
         run_example_progress
 
-        expect(@io.chunks).to eq([
+        expect(io.chunks).to eq([
           line_n_title("Test: #{hl '......'}"),
           line_n_title("Test: #{hl ' 40.0%'} - simle"),
           line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
@@ -305,15 +301,17 @@ describe Progress do
     describe 'different call styles' do
       let(:count_a){ 13 }
       let(:count_b){ 17 }
-
-      before do
-        reference_io = stub_progress_io(StringIO)
+      let(:reference_output) do
+        stub_progress_io(reference_io = StringIO.new)
         count_a.times.with_progress('Test') do
           count_b.times.with_progress{}
         end
-        @reference_output = reference_io.string
+        reference_io.string
+      end
+      let(:io){ StringIO.new }
 
-        @io = stub_progress_io(StringIO)
+      before do
+        stub_progress_io(io)
       end
 
       it 'outputs same when called without block' do
@@ -328,7 +326,7 @@ describe Progress do
           end
         end
         Progress.stop
-        expect(@io.string).to eq(@reference_output)
+        expect(io.string).to eq(reference_output)
       end
 
       it 'outputs same when called with block' do
@@ -343,14 +341,14 @@ describe Progress do
             end
           end
         end
-        expect(@io.string).to eq(@reference_output)
+        expect(io.string).to eq(reference_output)
       end
 
       it 'outputs same when called using with_progress on list' do
         count_a.times.to_a.with_progress('Test') do
           count_b.times.to_a.with_progress{}
         end
-        expect(@io.string).to eq(@reference_output)
+        expect(io.string).to eq(reference_output)
       end
     end
   end
