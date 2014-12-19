@@ -42,7 +42,7 @@ class Progress
   attr_reader :title
   attr_accessor :note
   def initialize(total, title)
-    if !total.kind_of?(Numeric) && (title.nil? || title.kind_of?(Numeric))
+    if !total.is_a?(Numeric) && (title.nil? || title.is_a?(Numeric))
       total, title = title, total
     end
     total = total && total != 0 ? Float(total) : 1.0
@@ -59,7 +59,7 @@ class Progress
   end
 
   def step(step, note)
-    unless step.kind_of?(Numeric)
+    unless step.is_a?(Numeric)
       step, note = nil, step
     end
     step = 1 if step.nil?
