@@ -217,11 +217,11 @@ describe Progress do
           Progress.step 2, 'simle'
 
           Progress.step 2, 'times' do
-            3.times.with_progress {}
+            3.times.with_progress{}
           end
 
           Progress.step 'enum' do
-            3.times.to_a.with_progress {}
+            3.times.to_a.with_progress{}
           end
         end
       end
@@ -296,7 +296,7 @@ describe Progress do
       before do
         reference_io = stub_progress_io(StringIO)
         count_a.times.with_progress('Test') do
-          count_b.times.with_progress {}
+          count_b.times.with_progress{}
         end
         @reference_output = reference_io.string
 
@@ -335,7 +335,7 @@ describe Progress do
 
       it 'should output same when called using with_progress on list' do
         count_a.times.to_a.with_progress('Test') do
-          count_b.times.to_a.with_progress {}
+          count_b.times.to_a.with_progress{}
         end
         expect(@io.string).to eq(@reference_output)
       end
