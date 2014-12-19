@@ -257,14 +257,14 @@ class Progress
 
           timing = if options[:finish]
             " (elapsed: #{elapsed})"
-          elsif eta_ = eta(current)
+          elsif (eta_ = eta(current))
             " (ETA: #{eta_})"
           end
 
           message = "#{parts.reverse * ' > '}#{timing}"
           text_message = "#{title_parts.reverse * ' > '}#{timing}"
 
-          if note = running? && @levels.last.note
+          if running? && (note = @levels.last.note)
             message << " - #{note}"
             text_message << " - #{note}"
           end
