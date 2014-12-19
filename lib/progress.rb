@@ -190,7 +190,12 @@ class Progress
   private
 
     def lock(force = true)
-      return unless force ? @lock.lock : @lock.try_lock
+      if force
+        @lock.lock
+      else
+        return unless @lock.try_lock
+      end
+
       begin
         yield
       ensure
