@@ -47,7 +47,7 @@ describe Progress do
     end
 
     it 'should not raise errors on extra step or stop' do
-      expect{
+      expect do
         3.times_with_progress do
           Progress.start 'simple' do
             Progress.step
@@ -59,7 +59,7 @@ describe Progress do
         end
         Progress.step
         Progress.stop
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     describe Enumerable do
