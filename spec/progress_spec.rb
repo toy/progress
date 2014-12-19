@@ -134,19 +134,19 @@ describe Progress do
           it "should call each only once for Array" do
             enum = [1, 2, 3]
             expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{ }).to eq(enum)
+            expect(enum.with_progress.each{}).to eq(enum)
           end
 
           it "should call each only once for Hash" do
             enum = {1 => 1, 2 => 2, 3 => 3}
             expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{ }).to eq(enum)
+            expect(enum.with_progress.each{}).to eq(enum)
           end
 
           it "should call each only once for Set" do
             enum = [1, 2, 3].to_set
             expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{ }).to eq(enum)
+            expect(enum.with_progress.each{}).to eq(enum)
           end
 
           if ''.is_a?(Enumerable) # ruby1.8
@@ -154,7 +154,7 @@ describe Progress do
               enum = "a\nb\nc"
               expect(enum).to receive(:each).once.and_return(enum)
               without_warnings do
-                expect(enum.with_progress.each{ }).to eq(enum)
+                expect(enum.with_progress.each{}).to eq(enum)
               end
             end
           end
@@ -163,7 +163,7 @@ describe Progress do
             enum = File.open(__FILE__)
             expect(enum).to receive(:each).once.and_return(enum)
             without_warnings do
-              expect(enum.with_progress.each{ }).to eq(enum)
+              expect(enum.with_progress.each{}).to eq(enum)
             end
           end
 
@@ -171,7 +171,7 @@ describe Progress do
             enum = StringIO.new("a\nb\nc")
             expect(enum).to receive(:each).once.and_return(enum)
             without_warnings do
-              expect(enum.with_progress.each{ }).to eq(enum)
+              expect(enum.with_progress.each{}).to eq(enum)
             end
           end
 
