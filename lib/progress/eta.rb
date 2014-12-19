@@ -21,13 +21,13 @@ class Progress
       if seconds
         case seconds
         when 0...60
-          '%.0fs' % seconds
+          format '%.0fs', seconds
         when 60...3600
-          '%.1fm' % (seconds / 60)
+          format '%.1fm', seconds / 60
         when 3600...86400
-          '%.1fh' % (seconds / 3600)
+          format '%.1fh', seconds / 3600
         else
-          '%.1fd' % (seconds / 86400)
+          format '%.1fd', seconds / 86400
         end
       end
     end
