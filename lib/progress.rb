@@ -6,6 +6,7 @@ require 'thread'
 require 'progress/beeper'
 require 'progress/eta'
 
+require 'progress/kernel'
 require 'progress/enumerable'
 require 'progress/integer'
 require 'progress/active_record' if defined?(ActiveRecord::Base)
@@ -297,12 +298,4 @@ class Progress
       end
     end
   end
-end
-
-# Add Progress method as alias to Progress.start
-module Kernel
-  define_method :Progress do |*args, &block|
-    Progress.start(*args, &block)
-  end
-  private :Progress
 end
