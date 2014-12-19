@@ -1,7 +1,9 @@
 require 'progress'
 
 module ActiveRecord
-  module BatchesWithProgress
+  # Add find_each_with_progress and find_in_batches_with_progress method to
+  # ActiveRecord::Base
+  class Base
     # run `find_each` with progress
     def find_each_with_progress(options = {})
       Progress.start(name.tableize, count(options)) do
@@ -23,9 +25,5 @@ module ActiveRecord
         end
       end
     end
-  end
-
-  class Base
-    extend BatchesWithProgress
   end
 end

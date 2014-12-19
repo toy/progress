@@ -193,6 +193,7 @@ describe Progress do
   end
 
   describe 'output' do
+    # Remember input by chunk
     class ChunkIo
       attr_reader :chunks
       def initialize

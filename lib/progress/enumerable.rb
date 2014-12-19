@@ -1,6 +1,7 @@
 require 'enumerator'
 require 'progress/with_progress'
 
+# Add with_progress method to Enumerable
 module Enumerable
   # run any Enumerable method with progress
   # methods which don't necessarily go through all items (like find, any? or

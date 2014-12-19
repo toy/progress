@@ -294,6 +294,7 @@ require 'progress/enumerable'
 require 'progress/integer'
 require 'progress/active_record' if defined?(ActiveRecord::Base)
 
+# Add Progress method as alias to Progress.start
 module Kernel
   define_method :Progress do |*args, &block|
     Progress.start(*args, &block)

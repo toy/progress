@@ -1,6 +1,7 @@
 require 'progress'
 
 class Progress
+  # Handling with_progress
   class WithProgress
     attr_reader :enumerable, :title
 

@@ -1,4 +1,5 @@
 class Progress
+  # Estimate time of arrival
   class Eta
     def initialize
       @started_at = Time.now
