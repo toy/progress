@@ -5,7 +5,7 @@ describe Progress do
   before do
     Progress.stay_on_line = true
     Progress.highlight = true
-    Progress.set_terminal_title = true
+    Progress.terminal_title = true
 
     allow(Progress).to receive(:start_beeper)
     allow(Progress).to receive(:time_to_print?).and_return(true)

@@ -178,13 +178,13 @@ class Progress
     end
 
     # show progerss in terminal title
-    def set_terminal_title?
-      @set_terminal_title.nil? ? io_tty? : @set_terminal_title
+    def terminal_title?
+      @terminal_title.nil? ? io_tty? : @terminal_title
     end
 
     # explicitly set showing progress in terminal title [true/false/nil]
-    def set_terminal_title=(value)
-      @set_terminal_title = true && value
+    def terminal_title=(value)
+      @terminal_title = true && value
     end
 
   private
@@ -273,7 +273,7 @@ class Progress
           message << "\n" if !stay_on_line? || options[:finish]
           io << message
 
-          if set_terminal_title?
+          if terminal_title?
             title = options[:finish] ? nil : text_message.to_s.gsub("\a", '␇')
             io << "\e]0;#{title}\a"
           end
