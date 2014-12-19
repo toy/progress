@@ -1,20 +1,18 @@
 class Progress
   class Beeper
-    class Restart < RuntimeError; end
-
     def initialize(time, &block)
       @thread = Thread.new do
-        begin
+        loop do
+          @skip = false
           sleep time
-          block.call
-        rescue Restart
+          block.call unless @skip
         end
-        redo
       end
     end
 
     def restart
-      @thread.raise Restart
+      @skip = true
+      @thread.run
     end
 
     def stop
