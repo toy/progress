@@ -234,12 +234,24 @@ describe Progress do
         "\e[1m#{s}\e[0m"
       end
 
+      def unhl(s)
+        s.gsub(/\e\[\dm/, '')
+      end
+
       def on_line(s)
         "\r" + s + "\e[K"
       end
 
       def line(s)
         s + "\n"
+      end
+
+      def on_line_n_title(s)
+        [on_line(s), title(unhl(s))]
+      end
+
+      def line_n_title(s)
+        [line(s), title(unhl(s))]
       end
 
       it 'should produce valid output when staying on line' do
@@ -249,20 +261,21 @@ describe Progress do
         run_example_progress
 
         expect(@io.chunks).to eq([
-          on_line("Test: #{hl '......'}"),                      title('Test: ......'),
-          on_line("Test: #{hl ' 40.0%'} - simle"),              title('Test:  40.0% - simle'),
-          on_line("Test: #{hl ' 40.0%'} > #{hl '......'}"),     title('Test:  40.0% > ......'),
-          on_line("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"),     title('Test:  53.3% >  33.3%'),
-          on_line("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"),     title('Test:  66.7% >  66.7%'),
-          on_line("Test: #{hl ' 80.0%'} > 100.0%"),             title('Test:  80.0% > 100.0%'),
-          on_line("Test: #{hl ' 80.0%'} - times"),              title('Test:  80.0% - times'),
-          on_line("Test: #{hl ' 80.0%'} > #{hl '......'}"),     title('Test:  80.0% > ......'),
-          on_line("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"),     title('Test:  86.7% >  33.3%'),
-          on_line("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"),     title('Test:  93.3% >  66.7%'),
-          on_line('Test: 100.0% > 100.0%'),                     title('Test: 100.0% > 100.0%'),
-          on_line('Test: 100.0% - enum'),                       title('Test: 100.0% - enum'),
-          on_line('Test: 100.0% (elapsed: 0s) - enum') + "\n",  title(''),
-        ])
+          on_line_n_title("Test: #{hl '......'}"),
+          on_line_n_title("Test: #{hl ' 40.0%'} - simle"),
+          on_line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
+          on_line_n_title("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"),
+          on_line_n_title("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"),
+          on_line_n_title("Test: #{hl ' 80.0%'} > 100.0%"),
+          on_line_n_title("Test: #{hl ' 80.0%'} - times"),
+          on_line_n_title("Test: #{hl ' 80.0%'} > #{hl '......'}"),
+          on_line_n_title("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"),
+          on_line_n_title("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"),
+          on_line_n_title('Test: 100.0% > 100.0%'),
+          on_line_n_title('Test: 100.0% - enum'),
+          on_line('Test: 100.0% (elapsed: 0s) - enum') + "\n",
+          title(''),
+        ].flatten)
       end
 
       it 'should produce valid output when not staying on line' do
@@ -272,20 +285,21 @@ describe Progress do
         run_example_progress
 
         expect(@io.chunks).to eq([
-          line("Test: #{hl '......'}"),                  title('Test: ......'),
-          line("Test: #{hl ' 40.0%'} - simle"),          title('Test:  40.0% - simle'),
-          line("Test: #{hl ' 40.0%'} > #{hl '......'}"), title('Test:  40.0% > ......'),
-          line("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"), title('Test:  53.3% >  33.3%'),
-          line("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"), title('Test:  66.7% >  66.7%'),
-          line("Test: #{hl ' 80.0%'} > 100.0%"),         title('Test:  80.0% > 100.0%'),
-          line("Test: #{hl ' 80.0%'} - times"),          title('Test:  80.0% - times'),
-          line("Test: #{hl ' 80.0%'} > #{hl '......'}"), title('Test:  80.0% > ......'),
-          line("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"), title('Test:  86.7% >  33.3%'),
-          line("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"), title('Test:  93.3% >  66.7%'),
-          line('Test: 100.0% > 100.0%'),                 title('Test: 100.0% > 100.0%'),
-          line('Test: 100.0% - enum'),                   title('Test: 100.0% - enum'),
-          line('Test: 100.0% (elapsed: 0s) - enum'),     title(''),
-        ])
+          line_n_title("Test: #{hl '......'}"),
+          line_n_title("Test: #{hl ' 40.0%'} - simle"),
+          line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
+          line_n_title("Test: #{hl ' 53.3%'} > #{hl ' 33.3%'}"),
+          line_n_title("Test: #{hl ' 66.7%'} > #{hl ' 66.7%'}"),
+          line_n_title("Test: #{hl ' 80.0%'} > 100.0%"),
+          line_n_title("Test: #{hl ' 80.0%'} - times"),
+          line_n_title("Test: #{hl ' 80.0%'} > #{hl '......'}"),
+          line_n_title("Test: #{hl ' 86.7%'} > #{hl ' 33.3%'}"),
+          line_n_title("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"),
+          line_n_title('Test: 100.0% > 100.0%'),
+          line_n_title('Test: 100.0% - enum'),
+          line('Test: 100.0% (elapsed: 0s) - enum'),
+          title(''),
+        ].flatten)
       end
     end
 
