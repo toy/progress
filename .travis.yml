@@ -8,6 +8,14 @@ rvm:
   - jruby-18mode
   - jruby-19mode
   - ree
-script: "bundle exec rspec"
+script:
+  if [ -z "$RUBOCOP" ]; then
+    bundle exec rspec
+  ; else
+    bundle exec rubocop
+  ; fi
 matrix:
   fast_finish: true
+  include:
+    - env: RUBOCOP=true
+      rvm: default
