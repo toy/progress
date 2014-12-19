@@ -9,3 +9,5 @@ rvm:
   - jruby-19mode
   - ree
 script: "bundle exec rspec"
+matrix:
+  fast_finish: true
