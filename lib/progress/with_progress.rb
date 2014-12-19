@@ -90,6 +90,5 @@ class Progress
         end
       end
     end
-
   end
 end

@@ -85,7 +85,6 @@ class Progress
 
   @lock = Mutex.new
   class << self
-
     # start progress indication
     def start(total = nil, title = nil)
       lock do
@@ -285,7 +284,6 @@ class Progress
         end
       end
     end
-
   end
 end
 

@@ -3,7 +3,6 @@ require 'rspec'
 require 'progress'
 
 describe Progress do
-
   before do
     Progress.stay_on_line = true
     Progress.highlight = true
@@ -16,7 +15,6 @@ describe Progress do
   end
 
   describe 'integrity' do
-
     before do
       @io = double(:<< => nil, :tty? => true)
       allow(Progress).to receive(:io).and_return(@io)
@@ -65,13 +63,11 @@ describe Progress do
     end
 
     describe Enumerable do
-
       before :each do
         @a = 0...1000
       end
 
       describe 'with_progress' do
-
         it 'should not break each' do
           reference = @a.each
           @a.with_progress.each do |n|
@@ -104,7 +100,6 @@ describe Progress do
         end
 
         describe 'with_progress.with_progress' do
-
           it 'should not change existing instance' do
             wp = @a.with_progress('hello')
             expect{ wp.with_progress('world') }.not_to change(wp, :title)
@@ -118,11 +113,9 @@ describe Progress do
             expect(wp_wp).not_to eq(wp)
             expect(wp_wp.enumerable).to eq(wp.enumerable)
           end
-
         end
 
         describe 'calls to each' do
-
           def without_warnings
             verbosity = $VERBOSE
             $VERBOSE = nil
@@ -174,13 +167,11 @@ describe Progress do
               expect(enum.with_progress.each{}).to eq(enum)
             end
           end
-
         end
       end
     end
 
     describe Integer do
-
       let(:count){ 108 }
 
       it 'should not break times_with_progress' do
@@ -198,13 +189,10 @@ describe Progress do
         end
         expect{ reference.next }.to raise_error(StopIteration)
       end
-
     end
-
   end
 
   describe 'output' do
-
     class ChunkIo
       attr_reader :chunks
       def initialize
@@ -224,7 +212,6 @@ describe Progress do
     end
 
     describe 'validity' do
-
       def run_example_progress
         Progress.start 5, 'Test' do
           Progress.step 2, 'simle'
@@ -300,11 +287,9 @@ describe Progress do
           line('Test: 100.0% (elapsed: 0s) - enum'),     title(''),
         ])
       end
-
     end
 
     describe 'different call styles' do
-
       let(:count_a){ 13 }
       let(:count_b){ 17 }
 
@@ -354,9 +339,6 @@ describe Progress do
         end
         expect(@io.string).to eq(@reference_output)
       end
-
     end
-
   end
-
 end
