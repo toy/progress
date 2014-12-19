@@ -24,10 +24,10 @@ class Progress
           format '%.0fs', seconds
         when 60...3600
           format '%.1fm', seconds / 60
-        when 3600...86400
+        when 3600...86_400
           format '%.1fh', seconds / 3600
         else
-          format '%.1fd', seconds / 86400
+          format '%.1fd', seconds / 86_400
         end
       end
     end

@@ -79,8 +79,8 @@ describe Progress do
         it 'should not break find' do
           default = proc{ 'default' }
           expect(@a.with_progress.find{ |n| n == 100 }).to eq(@a.find{ |n| n == 100 })
-          expect(@a.with_progress.find{ |n| n == 10000 }).to eq(@a.find{ |n| n == 10000 })
-          expect(@a.with_progress.find(default){ |n| n == 10000 }).to eq(@a.find(default){ |n| n == 10000 })
+          expect(@a.with_progress.find{ |n| n == 10_000 }).to eq(@a.find{ |n| n == 10_000 })
+          expect(@a.with_progress.find(default){ |n| n == 10_000 }).to eq(@a.find(default){ |n| n == 10_000 })
         end
 
         it 'should not break map' do
