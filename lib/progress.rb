@@ -106,12 +106,11 @@ class Progress
         @levels.push new(total, title)
       end
       print_message :force => true
-      if block_given?
-        begin
-          yield
-        ensure
-          stop
-        end
+      return unless block_given?
+      begin
+        yield
+      ensure
+        stop
       end
     end
 
@@ -139,13 +138,12 @@ class Progress
 
     # stop progress
     def stop
-      if running?
-        if @levels.length == 1
-          print_message :force => true, :finish => true
-          stop_beeper
-        end
-        @levels.pop
+      return unless running?
+      if @levels.length == 1
+        print_message :force => true, :finish => true
+        stop_beeper
       end
+      @levels.pop
     end
 
     # check if progress was started
@@ -155,9 +153,8 @@ class Progress
 
     # set note
     def note=(note)
-      if running?
-        @levels.last.note = note
-      end
+      return unless running?
+      @levels.last.note = note
     end
 
     # stay on one line
@@ -193,12 +190,11 @@ class Progress
   private
 
     def lock(force = true)
-      if force ? @lock.lock : @lock.try_lock
-        begin
-          yield
-        ensure
-          @lock.unlock
-        end
+      return unless force ? @lock.lock : @lock.try_lock
+      begin
+        yield
+      ensure
+        @lock.unlock
       end
     end
 
