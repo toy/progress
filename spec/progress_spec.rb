@@ -75,9 +75,12 @@ describe Progress do
 
         it 'does not break find' do
           default = proc{ 'default' }
-          expect(enum.with_progress.find{ |n| n == 100 }).to eq(enum.find{ |n| n == 100 })
-          expect(enum.with_progress.find{ |n| n == 10_000 }).to eq(enum.find{ |n| n == 10_000 })
-          expect(enum.with_progress.find(default){ |n| n == 10_000 }).to eq(enum.find(default){ |n| n == 10_000 })
+          expect(enum.with_progress.find{ |n| n == 100 }).
+            to eq(enum.find{ |n| n == 100 })
+          expect(enum.with_progress.find{ |n| n == 10_000 }).
+            to eq(enum.find{ |n| n == 10_000 })
+          expect(enum.with_progress.find(default){ |n| n == 10_000 }).
+            to eq(enum.find(default){ |n| n == 10_000 })
         end
 
         it 'does not break map' do
@@ -102,7 +105,7 @@ describe Progress do
             expect{ wp.with_progress('world') }.not_to change(wp, :title)
           end
 
-          it 'creates new instance with different title when called on WithProgress' do
+          it 'returns new instance with different title' do
             wp = enum.with_progress('hello')
             wp_wp = wp.with_progress('world')
             expect(wp.title).to eq('hello')

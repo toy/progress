@@ -245,7 +245,11 @@ class Progress
           @levels.reverse.each do |level|
             current = level.to_f(current)
 
-            percent = current == 0 ? '......' : format('%5.1f%%', current * 100.0)
+            percent = if current.zero?
+              '......'
+            else
+              format('%5.1f%%', current * 100.0)
+            end
             title = level.title && "#{level.title}: "
             if !highlight? || percent == '100.0%'
               parts << "#{title}#{percent}"

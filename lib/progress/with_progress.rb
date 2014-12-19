@@ -50,7 +50,7 @@ class Progress
             @enumerable.is_a?(IO),
             Object.const_defined?(:StringIO) && @enumerable.is_a?(StringIO),
             Object.const_defined?(:TempFile) && @enumerable.is_a?(TempFile)
-        warn "Progress: collecting elements for instance of class #{@enumerable.class}"
+        warn "Progress: collecting elements for #{@enumerable.class} instance"
         lines = []
         @enumerable.each{ |line| lines << line }
         lines
