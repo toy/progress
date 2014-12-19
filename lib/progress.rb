@@ -3,6 +3,13 @@
 require 'singleton'
 require 'thread'
 
+require 'progress/beeper'
+require 'progress/eta'
+
+require 'progress/enumerable'
+require 'progress/integer'
+require 'progress/active_record' if defined?(ActiveRecord::Base)
+
 # ==== Procedural example
 #   Progress.start('Test', 1000)
 #   1000.times do
@@ -291,13 +298,6 @@ class Progress
     end
   end
 end
-
-require 'progress/beeper'
-require 'progress/eta'
-
-require 'progress/enumerable'
-require 'progress/integer'
-require 'progress/active_record' if defined?(ActiveRecord::Base)
 
 # Add Progress method as alias to Progress.start
 module Kernel
