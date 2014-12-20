@@ -165,29 +165,9 @@ class Progress
     end
 
     def message_for_output(options)
-      current = 0
-      message = @levels.reverse.map do |level|
-        current = level.to_f(current)
-
-        part = current.zero? ? '......' : format('%5.1f%%', current * 100.0)
-
-        part = "\e[1m#{part}\e[0m" if highlight? && part != '100.0%'
-
-        level.title ? "#{level.title}: #{part}" : part
-      end.reverse * ' > '
-
-      if options[:finish]
-        message << " (elapsed: #{eta.elapsed})"
-      elsif (left = eta.left(current))
-        message << " (ETA: #{left})"
-      end
-
-      if running? && (note = @levels.last.note)
-        message << " - #{note}"
-      end
+      message = build_message(options)
 
       out = ''
-
       out << "\r" if stay_on_line?
       out << message
       out << "\e[K" if stay_on_line?
@@ -202,6 +182,33 @@ class Progress
       end
 
       out
+    end
+
+    def build_message(options)
+      current = 0
+      message = @levels.reverse.map do |level|
+        current = level.to_f(current)
+
+        part = current.zero? ? '......' : format('%5.1f%%', current * 100.0)
+
+        if highlight? && part != '100.0%'
+          part = "\e[1m#{part}\e[0m"
+        end
+
+        level.title ? "#{level.title}: #{part}" : part
+      end.reverse * ' > '
+
+      if options[:finish]
+        message << " (elapsed: #{eta.elapsed})"
+      elsif (left = eta.left(current))
+        message << " (ETA: #{left})"
+      end
+
+      if running? && (note = @levels.last.note)
+        message << " - #{note}"
+      end
+
+      message
     end
   end
 end
