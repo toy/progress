@@ -194,18 +194,6 @@ describe Progress do
   end
 
   describe 'output' do
-    # Remember input by chunk
-    class ChunkIo
-      attr_reader :chunks
-      def initialize
-        @chunks = []
-      end
-
-      def <<(data)
-        @chunks << data.to_s
-      end
-    end
-
     def stub_progress_io(io)
       allow(io).to receive(:tty?).and_return(true)
       allow(Progress).to receive(:io).and_return(io)
@@ -257,10 +245,10 @@ describe Progress do
       it 'produces valid output when staying on line' do
         Progress.stay_on_line = true
 
-        stub_progress_io(io = ChunkIo.new)
+        stub_progress_io(io = StringIO.new)
         run_example_progress
 
-        expect(io.chunks).to eq([
+        expect(io.string).to eq([
           on_line_n_title("Test: #{hl '......'}"),
           on_line_n_title("Test: #{hl ' 40.0%'} - simle"),
           on_line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
@@ -275,16 +263,16 @@ describe Progress do
           on_line_n_title('Test: 100.0% - enum'),
           on_line('Test: 100.0% (elapsed: 0s) - enum') + "\n",
           title(''),
-        ].flatten)
+        ].flatten.join)
       end
 
       it 'produces valid output when not staying on line' do
         Progress.stay_on_line = false
 
-        stub_progress_io(io = ChunkIo.new)
+        stub_progress_io(io = StringIO.new)
         run_example_progress
 
-        expect(io.chunks).to eq([
+        expect(io.string).to eq([
           line_n_title("Test: #{hl '......'}"),
           line_n_title("Test: #{hl ' 40.0%'} - simle"),
           line_n_title("Test: #{hl ' 40.0%'} > #{hl '......'}"),
@@ -299,7 +287,7 @@ describe Progress do
           line_n_title('Test: 100.0% - enum'),
           line('Test: 100.0% (elapsed: 0s) - enum'),
           title(''),
-        ].flatten)
+        ].flatten.join)
       end
     end
 

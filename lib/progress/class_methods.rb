@@ -159,51 +159,56 @@ class Progress
         if force || time_to_print?
           @next_time_to_print = Time.now + 0.3
           restart_beeper
-
-          current = 0
-          parts = []
-          title_parts = []
-          @levels.reverse.each do |level|
-            current = level.to_f(current)
-
-            percent = if current.zero?
-              '......'
-            else
-              format('%5.1f%%', current * 100.0)
-            end
-            title = level.title && "#{level.title}: "
-            if !highlight? || percent == '100.0%'
-              parts << "#{title}#{percent}"
-            else
-              parts << "#{title}\e[1m#{percent}\e[0m"
-            end
-            title_parts << "#{title}#{percent}"
-          end
-
-          timing = if options[:finish]
-            " (elapsed: #{eta.elapsed})"
-          elsif (left = eta.left(current))
-            " (ETA: #{left})"
-          end
-
-          message = "#{parts.reverse * ' > '}#{timing}"
-          text_message = "#{title_parts.reverse * ' > '}#{timing}"
-
-          if running? && (note = @levels.last.note)
-            message << " - #{note}"
-            text_message << " - #{note}"
-          end
-
-          message = "\r#{message}\e[K" if stay_on_line?
-          message << "\n" if !stay_on_line? || options[:finish]
-          io << message
-
-          if terminal_title?
-            title = options[:finish] ? nil : text_message.gsub("\a", '␇')
-            io << "\e]0;#{title}\a"
-          end
+          io << message_for_output(options)
         end
       end
+    end
+
+    def message_for_output(options)
+      current = 0
+      parts = []
+      title_parts = []
+      @levels.reverse.each do |level|
+        current = level.to_f(current)
+
+        percent = if current.zero?
+          '......'
+        else
+          format('%5.1f%%', current * 100.0)
+        end
+        title = level.title && "#{level.title}: "
+        if !highlight? || percent == '100.0%'
+          parts << "#{title}#{percent}"
+        else
+          parts << "#{title}\e[1m#{percent}\e[0m"
+        end
+        title_parts << "#{title}#{percent}"
+      end
+
+      timing = if options[:finish]
+        " (elapsed: #{eta.elapsed})"
+      elsif (left = eta.left(current))
+        " (ETA: #{left})"
+      end
+
+      message = "#{parts.reverse * ' > '}#{timing}"
+      text_message = "#{title_parts.reverse * ' > '}#{timing}"
+
+      if running? && (note = @levels.last.note)
+        message << " - #{note}"
+        text_message << " - #{note}"
+      end
+
+      message = "\r#{message}\e[K" if stay_on_line?
+      message << "\n" if !stay_on_line? || options[:finish]
+      out = message
+
+      if terminal_title?
+        title = options[:finish] ? nil : text_message.gsub("\a", '␇')
+        out << "\e]0;#{title}\a"
+      end
+
+      out
     end
   end
 end
