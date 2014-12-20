@@ -43,32 +43,7 @@ class Progress
     end
 
     def run(method, *args, &block)
-      enumerable = case
-      when @length
-        @enumerable
-      when
-            @enumerable.is_a?(String),
-            @enumerable.is_a?(IO),
-            defined?(StringIO) && @enumerable.is_a?(StringIO),
-            defined?(TempFile) && @enumerable.is_a?(TempFile)
-        warn "Progress: collecting elements for #{@enumerable.class} instance"
-        lines = []
-        @enumerable.each{ |line| lines << line }
-        lines
-      else
-        @enumerable
-      end
-
-      length = case
-      when @length
-        @length
-      when enumerable.respond_to?(:size)
-        enumerable.size
-      when enumerable.respond_to?(:length)
-        enumerable.length
-      else
-        enumerable.count
-      end
+      enumerable, length = resolve_enum_n_length
 
       if block
         result = Progress.start(@title, length) do
@@ -78,11 +53,7 @@ class Progress
             end
           end
         end
-        if result.eql?(enumerable)
-          @enumerable
-        else
-          result
-        end
+        result.eql?(enumerable) ? @enumerable : result
       else
         Progress.start(@title) do
           Progress.step do
@@ -90,6 +61,34 @@ class Progress
           end
         end
       end
+    end
+
+    def resolve_enum_n_length
+      return [@enumerable, @length] if @length
+      enumerable = enum_for_progress(@enumerable)
+      [enumerable, enum_length(enumerable)]
+    end
+
+    def enum_for_progress(enum)
+      case
+      when
+            enum.is_a?(String),
+            enum.is_a?(IO),
+            defined?(StringIO) && enum.is_a?(StringIO),
+            defined?(TempFile) && enum.is_a?(TempFile)
+        warn "Progress: collecting elements for #{enum.class} instance"
+        lines = []
+        enum.each{ |line| lines << line }
+        lines
+      else
+        enum
+      end
+    end
+
+    def enum_length(enum)
+      return enum.size if enum.respond_to?(:size)
+      return enum.length if enum.respond_to?(:length)
+      enum.count
     end
   end
 end
