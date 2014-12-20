@@ -166,46 +166,39 @@ class Progress
 
     def message_for_output(options)
       current = 0
-      parts = []
-      title_parts = []
-      @levels.reverse.each do |level|
+      message = @levels.reverse.map do |level|
         current = level.to_f(current)
 
-        percent = if current.zero?
-          '......'
-        else
-          format('%5.1f%%', current * 100.0)
-        end
-        title = level.title && "#{level.title}: "
-        if !highlight? || percent == '100.0%'
-          parts << "#{title}#{percent}"
-        else
-          parts << "#{title}\e[1m#{percent}\e[0m"
-        end
-        title_parts << "#{title}#{percent}"
-      end
+        part = current.zero? ? '......' : format('%5.1f%%', current * 100.0)
 
-      timing = if options[:finish]
-        " (elapsed: #{eta.elapsed})"
+        part = "\e[1m#{part}\e[0m" if highlight? && part != '100.0%'
+
+        level.title ? "#{level.title}: #{part}" : part
+      end.reverse * ' > '
+
+      if options[:finish]
+        message << " (elapsed: #{eta.elapsed})"
       elsif (left = eta.left(current))
-        " (ETA: #{left})"
+        message << " (ETA: #{left})"
       end
-
-      message = "#{parts.reverse * ' > '}#{timing}"
-      text_message = "#{title_parts.reverse * ' > '}#{timing}"
 
       if running? && (note = @levels.last.note)
         message << " - #{note}"
-        text_message << " - #{note}"
       end
 
-      message = "\r#{message}\e[K" if stay_on_line?
-      message << "\n" if !stay_on_line? || options[:finish]
-      out = message
+      out = ''
+
+      out << "\r" if stay_on_line?
+      out << message
+      out << "\e[K" if stay_on_line?
+      out << "\n" if !stay_on_line? || options[:finish]
 
       if terminal_title?
-        title = options[:finish] ? nil : text_message.gsub("\a", '␇')
-        out << "\e]0;#{title}\a"
+        out << "\e]0;"
+        unless options[:finish]
+          out << message.gsub(/\e\[\dm/, '').gsub("\a", '␇')
+        end
+        out << "\a"
       end
 
       out
