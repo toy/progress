@@ -199,7 +199,7 @@ class Progress
           io << message
 
           if terminal_title?
-            title = options[:finish] ? nil : text_message.to_s.gsub("\a", '␇')
+            title = options[:finish] ? nil : text_message.gsub("\a", '␇')
             io << "\e]0;#{title}\a"
           end
         end
