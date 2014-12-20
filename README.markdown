@@ -1,8 +1,12 @@
+[![Gem Version](https://img.shields.io/gem/v/progress.svg?style=flat)](https://rubygems.org/gems/progress)
+[![Build Status](https://img.shields.io/travis/toy/progress/master.svg?style=flat)](https://travis-ci.org/toy/progress)
+[![Code Climate](https://img.shields.io/codeclimate/github/toy/progress.svg?style=flat)](https://codeclimate.com/github/toy/progress)
+[![Dependency Status](https://img.shields.io/gemnasium/toy/progress.svg?style=flat)](https://gemnasium.com/toy/progress)
+[![Inch CI](http://inch-ci.org/github/toy/progress.svg?branch=master&style=flat)](http://inch-ci.org/github/toy/progress)
+
 # progress
 
 Show progress during console script run.
-
-[![Build Status](https://travis-ci.org/toy/progress.png?branch=master)](https://travis-ci.org/toy/progress)
 
 ## Installation
 
