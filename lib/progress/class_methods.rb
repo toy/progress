@@ -94,6 +94,8 @@ class Progress
 
   private
 
+    attr_reader :eta
+
     def init(total = nil, title = nil)
       lock do
         if running?
@@ -151,14 +153,6 @@ class Progress
       !@next_time_to_print || @next_time_to_print <= Time.now
     end
 
-    def eta(current)
-      @eta.left(current)
-    end
-
-    def elapsed
-      @eta.elapsed
-    end
-
     def print_message(options = {})
       force = options[:force]
       lock force do
@@ -187,9 +181,9 @@ class Progress
           end
 
           timing = if options[:finish]
-            " (elapsed: #{elapsed})"
-          elsif (eta_ = eta(current))
-            " (ETA: #{eta_})"
+            " (elapsed: #{eta.elapsed})"
+          elsif (left = eta.left(current))
+            " (ETA: #{left})"
           end
 
           message = "#{parts.reverse * ' > '}#{timing}"

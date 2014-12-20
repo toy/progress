@@ -9,8 +9,9 @@ describe Progress do
 
     allow(Progress).to receive(:start_beeper)
     allow(Progress).to receive(:time_to_print?).and_return(true)
-    allow(Progress).to receive(:eta)
-    allow(Progress).to receive(:elapsed).and_return('0s')
+
+    eta = instance_double(Progress::Eta, :left => nil, :elapsed => '0s')
+    allow(Progress).to receive(:eta).and_return(eta)
   end
 
   describe 'integrity' do
