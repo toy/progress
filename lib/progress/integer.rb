@@ -1,5 +1,6 @@
 require 'progress'
 
+# Add times_with_progress method to Integer
 class Integer
   # run `times` with progress
   #   100.times_with_progress('Numbers') do |number|
