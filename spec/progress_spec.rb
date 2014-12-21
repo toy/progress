@@ -161,19 +161,16 @@ describe Progress do
             end
           end
 
-          it 'calls each only once for File (IO)' do
-            enum = File.open(__FILE__)
-            expect(enum).to receive(:each).once.and_return(enum)
-            without_warnings do
-              expect(enum.with_progress.each{}).to eq(enum)
-            end
-          end
+          [
+            File.open(__FILE__),
+            StringIO.new(File.read(__FILE__)),
+          ].each do |enum|
+            it "calls each only once for #{enum.class}" do
+              expect(enum).to receive(:each).once.and_call_original
 
-          it 'calls each only once for StringIO' do
-            enum = StringIO.new("a\nb\nc")
-            expect(enum).to receive(:each).once.and_return(enum)
-            without_warnings do
-              expect(enum.with_progress.each{}).to eq(enum)
+              with_progress = enum.with_progress
+              expect(with_progress).not_to receive(:warn)
+              expect(with_progress.each{}).to eq(enum)
             end
           end
         end
