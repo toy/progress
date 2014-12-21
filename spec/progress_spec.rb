@@ -129,22 +129,15 @@ describe Progress do
             result
           end
 
-          it 'calls each only once for Array' do
-            enum = [1, 2, 3]
-            expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{}).to eq(enum)
-          end
-
-          it 'calls each only once for Hash' do
-            enum = {1 => 1, 2 => 2, 3 => 3}
-            expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{}).to eq(enum)
-          end
-
-          it 'calls each only once for Set' do
-            enum = [1, 2, 3].to_set
-            expect(enum).to receive(:each).once.and_return(enum)
-            expect(enum.with_progress.each{}).to eq(enum)
+          [
+            [1, 2, 3],
+            {1 => 1, 2 => 2, 3 => 3},
+            [1, 2, 3].to_set,
+          ].each do |enum|
+            it "calls each only once for #{enum.class}" do
+              expect(enum).to receive(:each).once.and_call_original
+              expect(enum.with_progress.each{}).to eq(enum)
+            end
           end
 
           if ''.is_a?(Enumerable) # ruby1.8
