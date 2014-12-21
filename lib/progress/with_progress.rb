@@ -25,8 +25,8 @@ class Progress
       super
     end
 
-    def respond_to?(sym, include_private = false)
-      enumerable_method?(method) || super(sym, include_private)
+    def respond_to?(method, include_private = false)
+      enumerable_method?(method) || super
     end
 
     def method_missing(method, *args, &block)
