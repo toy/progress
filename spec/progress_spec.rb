@@ -121,14 +121,6 @@ describe Progress do
         end
 
         describe 'calls to each' do
-          def without_warnings
-            verbosity = $VERBOSE
-            $VERBOSE = nil
-            result = yield
-            $VERBOSE = verbosity
-            result
-          end
-
           [
             [1, 2, 3],
             {1 => 1, 2 => 2, 3 => 3},
