@@ -75,7 +75,7 @@ class Progress
             enum.is_a?(String),
             enum.is_a?(IO),
             defined?(StringIO) && enum.is_a?(StringIO),
-            defined?(TempFile) && enum.is_a?(TempFile)
+            defined?(Tempfile) && enum.is_a?(Tempfile)
         warn "Progress: collecting elements for #{enum.class} instance"
         lines = []
         enum.each{ |line| lines << line }
