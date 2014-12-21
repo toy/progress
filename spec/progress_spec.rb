@@ -1,6 +1,7 @@
 require 'rspec'
 require 'progress'
 require 'tempfile'
+require 'shellwords'
 
 describe Progress do
   before do
@@ -177,6 +178,15 @@ describe Progress do
             with_progress = enum.with_progress
             expect(with_progress).not_to receive(:warn)
             expect(with_progress.each{}).to eq(enum_each)
+          end
+
+          it 'calls each only once for IO and shows warning' do
+            enum = IO.popen("cat #{__FILE__.shellescape}")
+            expect(enum).to receive(:each).once.and_call_original
+
+            with_progress = enum.with_progress
+            expect(with_progress).to receive(:warn)
+            expect(with_progress.each{}).to eq(enum)
           end
         end
       end
