@@ -2,6 +2,7 @@ require 'rspec'
 require 'progress'
 require 'tempfile'
 require 'shellwords'
+require 'csv'
 
 describe Progress do
   before do
@@ -187,6 +188,26 @@ describe Progress do
             with_progress = enum.with_progress
             expect(with_progress).to receive(:warn)
             expect(with_progress.each{}).to eq(enum)
+          end
+
+          if CSV.method_defined?(:pos)
+            it 'calls each only once for CSV' do
+              enum = CSV.open('spec/test.csv')
+              expect(enum).to receive(:each).once.and_call_original
+
+              with_progress = enum.with_progress
+              expect(with_progress).not_to receive(:warn)
+              expect(with_progress.each{}).to eq(nil)
+            end
+          else
+            it 'calls each only once for CSV and shows warning' do
+              enum = CSV.open('spec/test.csv', 'r')
+              expect(enum).to receive(:each).once.and_call_original
+
+              with_progress = enum.with_progress
+              expect(with_progress).to receive(:warn)
+              expect(with_progress.each{}).to eq(enum)
+            end
           end
         end
       end
