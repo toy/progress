@@ -1,4 +1,5 @@
 require 'progress'
+require 'stringio'
 
 class Progress
   # Handling with_progress
@@ -48,46 +49,80 @@ class Progress
     end
 
     def run(method, *args, &block)
-      enum, length = resolve_enum_n_length
-
-      if block
-        result = Progress.start(@title, length) do
-          enum.send(method, *args) do |*block_args|
-            Progress.step do
-              block.call(*block_args)
-            end
-          end
-        end
-        result.eql?(enum) ? @enum : result
-      else
-        Progress.start(@title) do
-          Progress.step do
-            enum.send(method, *args)
-          end
-        end
-      end
-    end
-
-    def resolve_enum_n_length
-      return [@enum, @length] if @length
-      enum = enum_for_progress(@enum)
-      [enum, enum_length(enum)]
-    end
-
-    def enum_for_progress(enum)
       case
-      when
-            enum.is_a?(String),
-            enum.is_a?(IO),
-            defined?(StringIO) && enum.is_a?(StringIO),
-            defined?(Tempfile) && enum.is_a?(Tempfile)
-        warn "Progress: collecting elements for #{enum.class} instance"
-        lines = []
-        enum.each{ |line| lines << line }
-        lines
+      when !block
+        run_without_block(@enum, method, *args)
+      when @length
+        run_with_length(@enum, @length, method, *args, &block)
+      when @enum.is_a?(String)
+        run_for_string(method, *args, &block)
+      when io?
+        run_for_io(method, *args, &block)
       else
-        enum
+        run_with_length(@enum, enum_length(@enum), method, *args, &block)
       end
+    end
+
+    def run_for_string(method, *args, &block)
+      with_substitute(StringIO.new(@enum)) do |io|
+        run_with_pos(io, method, *args, &block)
+      end
+    end
+
+    def run_for_io(method, *args, &block)
+      if io_pos?
+        run_with_pos(@enum, method, *args, &block)
+      else
+        warn "Progress: can't get #{@enum.class} pos, collecting elements"
+        with_substitute(@enum.to_a) do |lines|
+          run_with_length(lines, lines.length, method, *args, &block)
+        end
+      end
+    end
+
+    def run_without_block(enum, method, *args)
+      Progress.start(@title) do
+        Progress.step do
+          enum.send(method, *args)
+        end
+      end
+    end
+
+    def run_with_length(enum, length, method, *args, &block)
+      Progress.start(@title, length) do
+        enum.send(method, *args) do |*block_args|
+          Progress.step do
+            block.call(*block_args)
+          end
+        end
+      end
+    end
+
+    def run_with_pos(io, method, *args, &block)
+      size = io.respond_to?(:size) ? io.size : io.stat.size
+      Progress.start(@title, size) do
+        io.send(method, *args) do |*block_args|
+          Progress.set(io.pos) do
+            block.call(*block_args)
+          end
+        end
+      end
+    end
+
+    def with_substitute(enum)
+      result = yield enum
+      result.eql?(enum) ? @enum : result
+    end
+
+    def io?
+      @enum.respond_to?(:pos) &&
+        (@enum.respond_to?(:size) || @enum.respond_to?(:stat))
+    end
+
+    def io_pos?
+      @enum.pos; true
+    rescue Errno::ESPIPE
+      false
     end
 
     def enum_length(enum)
