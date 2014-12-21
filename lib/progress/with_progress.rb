@@ -6,11 +6,15 @@ class Progress
     attr_reader :enum, :title
     alias_method :enumerable, :enum
 
+    # If block given run each on instance otherwise return instance
+    def self.new(*args, &block)
+      block ? super.each(&block) : super
+    end
+
     # initialize with object responding to each, title and optional length
     # if block is provided, it is passed to each
-    def initialize(enum, title, length = nil, &block)
+    def initialize(enum, title, length = nil)
       @enum, @title, @length = enum, title, length
-      each(&block) if block
     end
 
     # returns self but changes title

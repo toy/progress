@@ -66,6 +66,10 @@ describe Progress do
       let(:enum){ 0...1000 }
 
       describe 'with_progress' do
+        it 'returns with block same as when called with each' do
+          expect(enum.with_progress{}).to eq(enum.with_progress.each{})
+        end
+
         it 'does not break each' do
           reference = enum.each
           enum.with_progress.each do |n|
