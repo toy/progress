@@ -140,6 +140,17 @@ describe Progress do
             end
           end
 
+          [
+            100.times,
+            'a'..'z',
+          ].each do |enum|
+            it "calls each twice for #{enum.class}" do
+              enum_each = enum.each{}
+              expect(enum).to receive(:each).at_most(:twice).and_call_original
+              expect(enum.with_progress.each{}).to eq(enum_each)
+            end
+          end
+
           if ''.is_a?(Enumerable) # ruby1.8
             it 'calls each only once for String' do
               enum = "a\nb\nc"
