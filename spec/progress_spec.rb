@@ -1,5 +1,6 @@
 require 'rspec'
 require 'progress'
+require 'tempfile'
 
 describe Progress do
   before do
@@ -166,6 +167,16 @@ describe Progress do
               expect(with_progress).not_to receive(:warn)
               expect(with_progress.each{}).to eq(enum)
             end
+          end
+
+          it 'calls each only once for Tempfile' do
+            enum = Tempfile.open('progress')
+            enum_each = enum.each{} # returns underlying File
+            expect(enum_each).to receive(:each).once.and_call_original
+
+            with_progress = enum.with_progress
+            expect(with_progress).not_to receive(:warn)
+            expect(with_progress.each{}).to eq(enum_each)
           end
         end
       end
