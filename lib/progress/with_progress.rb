@@ -3,23 +3,24 @@ require 'progress'
 class Progress
   # Handling with_progress
   class WithProgress
-    attr_reader :enumerable, :title
+    attr_reader :enum, :title
+    alias_method :enumerable, :enum
 
     # initialize with object responding to each, title and optional length
     # if block is provided, it is passed to each
-    def initialize(enumerable, title, length = nil, &block)
-      @enumerable, @title, @length = enumerable, title, length
+    def initialize(enum, title, length = nil, &block)
+      @enum, @title, @length = enum, title, length
       each(&block) if block
     end
 
     # returns self but changes title
     def with_progress(title = nil, length = nil, &block)
-      self.class.new(@enumerable, title, length || @length, &block)
+      self.class.new(@enum, title, length || @length, &block)
     end
 
     # befriend with in_threads gem
     def in_threads(*args, &block)
-      @enumerable.in_threads(*args).with_progress(@title, @length, &block)
+      @enum.in_threads(*args).with_progress(@title, @length, &block)
     rescue
       super
     end
@@ -43,30 +44,30 @@ class Progress
     end
 
     def run(method, *args, &block)
-      enumerable, length = resolve_enum_n_length
+      enum, length = resolve_enum_n_length
 
       if block
         result = Progress.start(@title, length) do
-          enumerable.send(method, *args) do |*block_args|
+          enum.send(method, *args) do |*block_args|
             Progress.step do
               block.call(*block_args)
             end
           end
         end
-        result.eql?(enumerable) ? @enumerable : result
+        result.eql?(enum) ? @enum : result
       else
         Progress.start(@title) do
           Progress.step do
-            enumerable.send(method, *args)
+            enum.send(method, *args)
           end
         end
       end
     end
 
     def resolve_enum_n_length
-      return [@enumerable, @length] if @length
-      enumerable = enum_for_progress(@enumerable)
-      [enumerable, enum_length(enumerable)]
+      return [@enum, @length] if @length
+      enum = enum_for_progress(@enum)
+      [enum, enum_length(enum)]
     end
 
     def enum_for_progress(enum)
