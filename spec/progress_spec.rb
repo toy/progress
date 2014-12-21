@@ -151,14 +151,16 @@ describe Progress do
             end
           end
 
-          if ''.is_a?(Enumerable) # ruby1.8
-            it 'calls each only once for String' do
-              enum = "a\nb\nc"
-              expect(enum).to receive(:each).once.and_return(enum)
-              without_warnings do
-                expect(enum.with_progress.each{}).to eq(enum)
-              end
-            end
+          it 'calls each only once on StringIO for String' do
+            enum = "a\nb\nc"
+            expect(enum).not_to receive(:each)
+            io = StringIO.new(enum)
+            expect(StringIO).to receive(:new).with(enum).and_return(io)
+            expect(io).to receive(:each).once.and_call_original
+
+            with_progress = Progress::WithProgress.new(enum)
+            expect(with_progress).not_to receive(:warn)
+            expect(with_progress.each{}).to eq(enum)
           end
 
           [
