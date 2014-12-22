@@ -133,6 +133,10 @@ describe Progress do
               expect(enum).to receive(:each).once.and_call_original
               expect(enum.with_progress.each{}).to eq(enum)
             end
+
+            it "yields same objects for #{enum.class}" do
+              expect(enum.with_progress.entries).to eq(enum.entries)
+            end
           end
 
           [
@@ -143,6 +147,10 @@ describe Progress do
               enum_each = enum.each{}
               expect(enum).to receive(:each).at_most(:twice).and_call_original
               expect(enum.with_progress.each{}).to eq(enum_each)
+            end
+
+            it "yields same objects for #{enum.class}" do
+              expect(enum.with_progress.entries).to eq(enum.entries)
             end
           end
 
@@ -156,6 +164,13 @@ describe Progress do
             with_progress = Progress::WithProgress.new(enum)
             expect(with_progress).not_to receive(:warn)
             expect(with_progress.each{}).to eq(enum)
+          end
+
+          it 'yields same lines for String' do
+            enum = "a\nb\nc"
+            lines = []
+            Progress::WithProgress.new(enum).each{ |line| lines << line }
+            expect(lines).to eq(enum.lines.to_a)
           end
 
           [
@@ -190,6 +205,20 @@ describe Progress do
             expect(with_progress.each{}).to eq(enum)
           end
 
+          [
+            File.open(__FILE__),
+            StringIO.new(File.read(__FILE__)),
+            Tempfile.open('progress').tap do |f|
+              f.write(File.read(__FILE__))
+              f.rewind
+            end,
+            IO.popen("cat #{__FILE__.shellescape}"),
+          ].each do |enum|
+            it "yields same lines for #{enum.class}" do
+              expect(enum.with_progress.entries).to eq(File.readlines(__FILE__))
+            end
+          end
+
           if CSV.method_defined?(:pos)
             it 'calls each only once for CSV' do
               enum = CSV.open('spec/test.csv')
@@ -208,6 +237,11 @@ describe Progress do
               expect(with_progress).to receive(:warn)
               expect(with_progress.each{}).to eq(enum)
             end
+          end
+
+          it 'yields same lines for CSV' do
+            csv = proc{ CSV.open('spec/test.csv', 'r') }
+            expect(csv[].with_progress.entries).to eq(csv[].entries)
           end
         end
       end
