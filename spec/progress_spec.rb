@@ -123,7 +123,7 @@ describe Progress do
           end
         end
 
-        describe 'calls to each' do
+        describe 'collections' do
           [
             [1, 2, 3],
             {1 => 1, 2 => 2, 3 => 3},
@@ -153,8 +153,10 @@ describe Progress do
               expect(enum.with_progress.entries).to eq(enum.entries)
             end
           end
+        end
 
-          it 'calls each only once on StringIO for String' do
+        describe String do
+          it 'calls each only once on StringIO' do
             enum = "a\nb\nc"
             expect(enum).not_to receive(:each)
             io = StringIO.new(enum)
@@ -166,13 +168,15 @@ describe Progress do
             expect(with_progress.each{}).to eq(enum)
           end
 
-          it 'yields same lines for String' do
+          it 'yields same lines' do
             enum = "a\nb\nc"
             lines = []
             Progress::WithProgress.new(enum).each{ |line| lines << line }
             expect(lines).to eq(enum.lines.to_a)
           end
+        end
 
+        describe IO do
           [
             File.open(__FILE__),
             StringIO.new(File.read(__FILE__)),
@@ -218,7 +222,9 @@ describe Progress do
               expect(enum.with_progress.entries).to eq(File.readlines(__FILE__))
             end
           end
+        end
 
+        describe CSV do
           if CSV.method_defined?(:pos)
             it 'calls each only once for CSV' do
               enum = CSV.open('spec/test.csv')
