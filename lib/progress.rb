@@ -70,7 +70,8 @@ class Progress
 
   def step(step, note)
     unless step.is_a?(Numeric)
-      step, note = nil, step
+      note = step
+      step = nil
     end
     step = 1 if step.nil?
 
