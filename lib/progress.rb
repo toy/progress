@@ -60,6 +60,7 @@ class Progress
     @total = total
     @current = 0.0
     @title = title
+    @mutex = Mutex.new
   end
 
   def to_f(inner)
@@ -77,7 +78,7 @@ class Progress
     @step = step
     @note = note
     ret = yield if block_given?
-    Thread.exclusive do
+    @mutex.synchronize do
       @current += step
     end
     ret
@@ -87,7 +88,7 @@ class Progress
     @step = new_current - @current
     @note = note
     ret = yield if block_given?
-    Thread.exclusive do
+    @mutex.synchronize do
       @current = new_current
     end
     ret
