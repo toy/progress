@@ -17,6 +17,9 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Max: 20
 
+Metrics/ModuleLength:
+  Max: 160
+
 Metrics/PerceivedComplexity:
   Max: 10
 
