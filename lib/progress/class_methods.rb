@@ -176,7 +176,7 @@ class Progress
       if terminal_title?
         out << "\e]0;"
         unless options[:finish]
-          out << message.gsub(/\e\[\dm/, '').gsub("\a", '␇')
+          out << message.gsub(/\e\[\dm/, '').tr("\a", '␇')
         end
         out << "\a"
       end
