@@ -60,6 +60,7 @@ class Progress
     @total = total
     @current = 0.0
     @title = title
+    @mutex = Mutex.new
   end
 
   def to_f(inner)
@@ -70,14 +71,15 @@ class Progress
 
   def step(step, note)
     unless step.is_a?(Numeric)
-      step, note = nil, step
+      note = step
+      step = nil
     end
     step = 1 if step.nil?
 
     @step = step
     @note = note
     ret = yield if block_given?
-    Thread.exclusive do
+    @mutex.synchronize do
       @current += step
     end
     ret
@@ -87,7 +89,7 @@ class Progress
     @step = new_current - @current
     @note = note
     ret = yield if block_given?
-    Thread.exclusive do
+    @mutex.synchronize do
       @current = new_current
     end
     ret
