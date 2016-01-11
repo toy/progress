@@ -15,9 +15,7 @@ class Progress
     # initialize with object responding to each, title and optional length
     # if block is provided, it is passed to each
     def initialize(enum, title = nil, length = nil)
-      @enum = enum
-      @title = title
-      @length = length
+      @enum, @title, @length = enum, title, length
     end
 
     # returns self but changes title

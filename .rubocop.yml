@@ -50,6 +50,9 @@ Style/IfUnlessModifier:
 Style/IndentHash:
   EnforcedStyle: consistent
 
+Style/ParallelAssignment:
+  Enabled: false
+
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     '%w': '[]'
