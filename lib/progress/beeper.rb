@@ -1,12 +1,12 @@
 class Progress
   # Repeatedly run block of code after time interval
   class Beeper
-    def initialize(time, &block)
+    def initialize(time)
       @thread = Thread.new do
         loop do
           @skip = false
           sleep time
-          block.call unless @skip
+          yield unless @skip
         end
       end
     end

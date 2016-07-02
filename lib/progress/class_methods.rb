@@ -26,7 +26,7 @@ class Progress
         print_message
         ret
       elsif block
-        block.call
+        yield
       end
     end
 
@@ -37,7 +37,7 @@ class Progress
         print_message
         ret
       elsif block
-        block.call
+        yield
       end
     end
 

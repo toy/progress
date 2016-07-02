@@ -26,6 +26,9 @@ Metrics/PerceivedComplexity:
 Style/AccessModifierIndentation:
   EnforcedStyle: outdent
 
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
 Style/BracesAroundHashParameters:
   Enabled: false
 
@@ -36,6 +39,9 @@ Style/DotPosition:
   EnforcedStyle: trailing
 
 Style/DoubleNegation:
+  Enabled: false
+
+Style/EmptyCaseCondition:
   Enabled: false
 
 Style/Encoding:
@@ -67,5 +73,8 @@ Style/SpaceBeforeBlockBraces:
 Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
-Style/TrailingComma:
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInLiteral:
   EnforcedStyleForMultiline: comma
