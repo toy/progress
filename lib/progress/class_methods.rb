@@ -19,6 +19,10 @@ class Progress
       end
     end
 
+    def io=(io)
+      @io = io
+    end
+
     # step current progress
     def step(step = nil, note = nil, &block)
       if running?
