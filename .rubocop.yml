@@ -56,6 +56,9 @@ Style/IfUnlessModifier:
 Style/IndentHash:
   EnforcedStyle: consistent
 
+Style/NumericPredicate:
+  Enabled: false
+
 Style/ParallelAssignment:
   Enabled: false
 
