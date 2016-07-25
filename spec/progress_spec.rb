@@ -49,6 +49,14 @@ describe Progress do
       end).to eq([[1, 2, 3], [2, 4, 6], [3, 6, 9]])
     end
 
+    it 'checks respond_to? methods of self and of Enumerable' do
+      with_progress = [1, 2, 3].with_progress
+
+      ([:each, :with_progress] + Enumerable.instance_methods).each do |method|
+        expect(with_progress).to respond_to(method)
+      end
+    end
+
     it 'does not raise errors on extra step or stop' do
       expect do
         3.times_with_progress do

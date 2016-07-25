@@ -30,15 +30,17 @@ class Progress
       super
     end
 
-    def respond_to?(method, include_private = false)
+    def respond_to_missing?(method, include_private = false)
       enumerable_method?(method) || super
     end
+
+    alias_method :respond_to?, :respond_to_missing? if RUBY_VERSION < '1.9'
 
     def method_missing(method, *args, &block)
       if enumerable_method?(method)
         run(method, *args, &block)
       else
-        super(method, *args, &block)
+        super
       end
     end
 
