@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
 
   s.add_development_dependency 'rspec', '~> 3.0'
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('1.9.3')
+  if RUBY_VERSION >= '2.0'
     s.add_development_dependency 'rubocop', '~> 0.27'
   end
 end
