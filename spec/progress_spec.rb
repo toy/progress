@@ -57,6 +57,12 @@ describe Progress do
       end
     end
 
+    it 'returns false for respond_to? with non existing methods' do
+      with_progress = [1, 2, 3].with_progress
+
+      expect(with_progress).not_to respond_to(:should_not_be_defined)
+    end
+
     it 'does not raise errors on extra step or stop' do
       expect do
         3.times_with_progress do
