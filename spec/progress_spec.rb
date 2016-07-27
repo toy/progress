@@ -148,8 +148,21 @@ describe Progress do
               expect(enum.with_progress.each{}).to eq(enum)
             end
 
-            it "yields same objects for #{enum.class}" do
-              expect(enum.with_progress.entries).to eq(enum.entries)
+            context 'yielding' do
+              let(:expected){ [] }
+              let(:got){ [] }
+
+              after{ expect(got).to eq(expected) }
+
+              it "yields same objects with one block argument for #{enum.class}" do
+                enum.each{ |a| expected << a }
+                enum.with_progress{ |a| got << a }
+              end
+
+              it "yields same objects with two block arguments for #{enum.class}" do
+                enum.each{ |a, b| expected << [a, b] }
+                enum.with_progress{ |a, b| got << [a, b] }
+              end
             end
           end
 
