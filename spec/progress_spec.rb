@@ -137,48 +137,55 @@ describe Progress do
           end
         end
 
-        describe 'collections' do
-          [
-            [1, 2, 3],
-            {1 => 1, 2 => 2, 3 => 3},
-            [1, 2, 3].to_set,
-          ].each do |enum|
-            it "calls each only once for #{enum.class}" do
+        shared_examples 'yielding' do |enum|
+          let(:expected){ [] }
+          let(:got){ [] }
+
+          after{ expect(got).to eq(expected) }
+
+          it 'yields same objects with one block argument' do
+            enum.each{ |a| expected << a }
+            enum.with_progress{ |a| got << a }
+          end
+
+          it 'yields same objects with two block arguments' do
+            enum.each{ |a, b| expected << [a, b] }
+            enum.with_progress{ |a, b| got << [a, b] }
+          end
+
+          it 'yields same objects with splat block arguments' do
+            enum.each{ |*a| expected << a }
+            enum.with_progress{ |*a| got << a }
+          end
+        end
+
+        [
+          [1, [2, :b], [3, :c, :d, :e]],
+          {1 => 1, 2 => 2, 3 => 3},
+          [1, 2, 3].to_set,
+        ].each do |enum|
+          describe enum.class do
+            it 'calls each only once' do
               expect(enum).to receive(:each).once.and_call_original
               expect(enum.with_progress.each{}).to eq(enum)
             end
 
-            context 'yielding' do
-              let(:expected){ [] }
-              let(:got){ [] }
-
-              after{ expect(got).to eq(expected) }
-
-              it "yields same objects with one block argument for #{enum.class}" do
-                enum.each{ |a| expected << a }
-                enum.with_progress{ |a| got << a }
-              end
-
-              it "yields same objects with two block arguments for #{enum.class}" do
-                enum.each{ |a, b| expected << [a, b] }
-                enum.with_progress{ |a, b| got << [a, b] }
-              end
-            end
+            include_examples 'yielding', enum
           end
+        end
 
-          [
-            100.times,
-            'a'..'z',
-          ].each do |enum|
-            it "calls each twice for #{enum.class}" do
+        [
+          100.times,
+          'a'..'z',
+        ].each do |enum|
+          describe enum.class do
+            it 'calls each twice' do
               enum_each = enum.each{}
               expect(enum).to receive(:each).at_most(:twice).and_call_original
               expect(enum.with_progress.each{}).to eq(enum_each)
             end
 
-            it "yields same objects for #{enum.class}" do
-              expect(enum.with_progress.entries).to eq(enum.entries)
-            end
+            include_examples 'yielding', enum
           end
         end
 
