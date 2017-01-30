@@ -459,5 +459,57 @@ describe Progress do
         expect(io.string).to eq(reference_output)
       end
     end
+
+    describe '.io' do
+      it 'is $stderr by default' do
+        expect(Progress.io).to be $stderr
+      end
+
+      it 'is settable' do
+        io = StringIO.new
+
+        Progress.io = io
+
+        expect(Progress.io).to be io
+
+        Progress.io = nil
+      end
+
+      it 'is resettable' do
+        Progress.io = :something
+
+        expect(Progress.io).not_to be $stderr
+
+        Progress.io = nil
+
+        expect(Progress.io).to be $stderr
+      end
+    end
+
+    describe '.io_tty?' do
+      subject{ Progress.io_tty? }
+
+      let(:tty?){ false }
+      let(:progress_tty){ nil }
+
+      before do
+        allow(Progress.io).to receive(:tty?).and_return(tty?)
+        allow(ENV).to receive(:[]).with('PROGRESS_TTY').and_return(progress_tty)
+      end
+
+      it{ is_expected.not_to be_truthy }
+
+      context 'when io is tty' do
+        let(:tty?){ true }
+
+        it{ is_expected.to be_truthy }
+      end
+
+      context 'when PROGRESS_TTY' do
+        let(:tty?){ true }
+
+        it{ is_expected.to be_truthy }
+      end
+    end
   end
 end

@@ -92,6 +92,16 @@ class Progress
       @terminal_title = true && value
     end
 
+    attr_writer :io
+
+    def io
+      @io ||= $stderr
+    end
+
+    def io_tty?
+      io.tty? || ENV['PROGRESS_TTY']
+    end
+
   private
 
     attr_reader :eta
@@ -125,14 +135,6 @@ class Progress
       ensure
         @lock.unlock
       end
-    end
-
-    def io
-      @io || $stderr
-    end
-
-    def io_tty?
-      io.tty? || ENV['PROGRESS_TTY']
     end
 
     def start_beeper
