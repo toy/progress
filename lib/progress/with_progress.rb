@@ -138,6 +138,9 @@ class Progress
       @enum.pos; true
     rescue Errno::ESPIPE
       false
+    rescue Errno::EPIPE
+      raise unless defined?(JRUBY_VERSION)
+      false
     end
 
     def enum_length(enum)
