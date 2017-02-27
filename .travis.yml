@@ -15,7 +15,6 @@ rvm:
   - 'jruby-9.1.5.0'
 script: bundle exec rspec
 matrix:
-  fast_finish: true
   include:
     - env: RUBOCOP=✓
       rvm: '2'
