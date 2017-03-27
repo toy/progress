@@ -52,8 +52,8 @@ describe Progress do
     it 'checks respond_to? methods of self and of Enumerable' do
       with_progress = [1, 2, 3].with_progress
 
-      ([:each, :with_progress] + Enumerable.instance_methods).each do |method|
-        expect(with_progress).to respond_to(method)
+      (%w[each with_progress] + Enumerable.instance_methods).each do |method|
+        expect(with_progress).to respond_to(method.to_sym)
       end
     end
 
