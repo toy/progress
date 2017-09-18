@@ -26,7 +26,7 @@ class Progress
     # befriend with in_threads gem
     def in_threads(*args, &block)
       @enum.in_threads(*args).with_progress(@title, @length, &block)
-    rescue
+    rescue NoMethodError
       super
     end
 
