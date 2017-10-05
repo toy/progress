@@ -95,6 +95,17 @@ describe Progress do
           expect{ reference.next }.to raise_error(StopIteration)
         end
 
+        it 'does not break each_with_index' do
+          reference = enum.each
+          counter = 0
+          enum.with_progress.each_with_index do |n, i|
+            expect(n).to eq(reference.next)
+            expect(i).to eq(counter)
+            counter += 1
+          end
+          expect{ reference.next }.to raise_error(StopIteration)
+        end
+
         it 'does not break find' do
           default = proc{ 'default' }
           expect(enum.with_progress.find{ |n| n == 100 }).
