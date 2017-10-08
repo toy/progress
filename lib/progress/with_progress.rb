@@ -103,22 +103,22 @@ class Progress
       end
     end
 
-    def run_with_length(enum, length, method, *args, &block)
+    def run_with_length(enum, length, method, *args)
       Progress.start(@title, length) do
-        enum.send(method, *args) do |*block_args|
+        enum.send(method, *args) do |block_args|
           Progress.step do
-            block.call(*block_args)
+            yield(block_args)
           end
         end
       end
     end
 
-    def run_with_pos(io, method, *args, &block)
+    def run_with_pos(io, method, *args)
       size = io.respond_to?(:size) ? io.size : io.stat.size
       Progress.start(@title, size) do
-        io.send(method, *args) do |*block_args|
+        io.send(method, *args) do |block_args|
           Progress.set(io.pos) do
-            block.call(*block_args)
+            yield(block_args)
           end
         end
       end
