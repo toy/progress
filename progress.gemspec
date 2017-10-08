@@ -8,6 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Ivan Kuchin']
   s.license     = 'MIT'
 
+  s.required_ruby_version = '>= 1.9.3'
+
   s.rubyforge_project = s.name
 
   s.files         = `git ls-files`.split("\n")
