@@ -60,9 +60,6 @@ Style/EmptyCaseCondition:
 Style/Encoding:
   Enabled: false
 
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
-
 Style/IfUnlessModifier:
   MaxLineLength: 40
 

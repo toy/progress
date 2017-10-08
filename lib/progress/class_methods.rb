@@ -10,7 +10,7 @@ class Progress
     # start progress indication
     def start(total = nil, title = nil)
       init(total, title)
-      print_message :force => true
+      print_message force: true
       return unless block_given?
       begin
         yield
@@ -45,7 +45,7 @@ class Progress
     def stop
       return unless running?
       if @levels.length == 1
-        print_message :force => true, :finish => true
+        print_message force: true, finish: true
         stop_beeper
       end
       @levels.pop
