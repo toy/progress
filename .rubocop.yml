@@ -45,6 +45,9 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 10
 
+Performance/RedundantBlockCall:
+  Enabled: false
+
 Style/Alias:
   EnforcedStyle: prefer_alias_method
 
