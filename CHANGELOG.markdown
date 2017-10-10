@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Remove special handling for CSV in ruby 1.8 [@toy](https://github.com/toy)
 * Set minimum ruby version to 1.9.3 [@toy](https://github.com/toy)
 * Support `Enumerable#each_with_index` which stopped working since [45435b3](https://github.com/toy/progress/commit/45435b31ae0f9ad42255d9105d264f5fe9722c88) ([v3.2.2](#v322-2016-07-27)), not compatible with ruby 1.8 [#9](https://github.com/toy/progress/pull/9) [@amatsuda](https://github.com/amatsuda)
 

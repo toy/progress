@@ -64,8 +64,6 @@ class Progress
         run_for_string(method, *args, &block)
       when io?
         run_for_io(method, *args, &block)
-      when defined?(CSV::Reader) && @enum.is_a?(CSV::Reader)
-        run_for_ruby18_csv(method, *args, &block)
       else
         run_with_length(@enum, enum_length(@enum), method, *args, &block)
       end
@@ -85,13 +83,6 @@ class Progress
         with_substitute(@enum.to_a) do |lines|
           run_with_length(lines, lines.length, method, *args, &block)
         end
-      end
-    end
-
-    def run_for_ruby18_csv(method, *args, &block)
-      warn "Progress: #{@enum.class} doesn't expose IO, collecting elements"
-      with_substitute(@enum.to_a) do |lines|
-        run_with_length(lines, lines.length, method, *args, &block)
       end
     end
 
