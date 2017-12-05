@@ -19,6 +19,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rspec', '~> 3.0'
   if RUBY_VERSION >= '2.0'
-    s.add_development_dependency 'rubocop', '~> 0.27'
+    s.add_development_dependency 'rubocop', '~> 0.49'
   end
 end
