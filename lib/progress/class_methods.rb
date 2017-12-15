@@ -188,7 +188,7 @@ class Progress
 
     def build_message(options)
       current = 0
-      message = @levels.reverse.map do |level|
+      reverse_parts = @levels.reverse.map do |level|
         current = level.to_f(current)
 
         part = current.zero? ? '......' : format('%5.1f%%', current * 100.0)
@@ -198,7 +198,8 @@ class Progress
         end
 
         level.title ? "#{level.title}: #{part}" : part
-      end.reverse * ' > '
+      end
+      message = reverse_parts.reverse * ' > '
 
       if options[:finish]
         message << " (elapsed: #{eta.elapsed})"

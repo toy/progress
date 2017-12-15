@@ -61,7 +61,7 @@ Style/Encoding:
   Enabled: false
 
 Style/IfUnlessModifier:
-  MaxLineLength: 40
+  Enabled: false
 
 Style/NumericPredicate:
   Enabled: false
