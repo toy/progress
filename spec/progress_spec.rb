@@ -340,32 +340,32 @@ describe Progress do
         end
       end
 
-      def title(s)
-        "\e]0;#{s}\a"
+      def title(str)
+        "\e]0;#{str}\a"
       end
 
-      def hl(s)
-        "\e[1m#{s}\e[0m"
+      def hl(str)
+        "\e[1m#{str}\e[0m"
       end
 
-      def unhl(s)
-        s.gsub(/\e\[\dm/, '')
+      def unhl(str)
+        str.gsub(/\e\[\dm/, '')
       end
 
-      def on_line(s)
-        "\r" + s + "\e[K"
+      def on_line(str)
+        "\r" + str + "\e[K"
       end
 
-      def line(s)
-        s + "\n"
+      def line(str)
+        str + "\n"
       end
 
-      def on_line_n_title(s)
-        [on_line(s), title(unhl(s))]
+      def on_line_n_title(str)
+        [on_line(str), title(unhl(str))]
       end
 
-      def line_n_title(s)
-        [line(s), title(unhl(s))]
+      def line_n_title(str)
+        [line(str), title(unhl(str))]
       end
 
       it 'produces valid output when staying on line' do
