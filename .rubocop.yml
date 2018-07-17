@@ -24,6 +24,9 @@ Layout/SpaceBeforeBlockBraces:
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
+Lint/UnneededRequireStatement:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 30
 
