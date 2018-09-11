@@ -8,6 +8,7 @@ class Progress
     def left(completed)
       seconds = seconds_left(completed)
       return unless seconds && seconds > 0
+
       seconds_to_string(seconds)
     end
 
@@ -19,6 +20,7 @@ class Progress
 
     def seconds_to_string(seconds)
       return unless seconds
+
       case seconds
       when 0...60
         format '%.0fs', seconds
@@ -34,6 +36,7 @@ class Progress
     def seconds_left(completed)
       now = Time.now
       return unless completed > 0 && now - @started_at >= 1
+
       current_eta = @started_at + (now - @started_at) / completed
       @left = if @left
         @left + (current_eta - @left) * (1 + completed) * 0.5

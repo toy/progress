@@ -131,6 +131,7 @@ class Progress
       false
     rescue Errno::EPIPE
       raise unless defined?(JRUBY_VERSION)
+
       false
     end
 

@@ -12,6 +12,7 @@ class Progress
       init(total, title)
       print_message force: true
       return unless block_given?
+
       begin
         yield
       ensure
@@ -44,6 +45,7 @@ class Progress
     # stop progress
     def stop
       return unless running?
+
       if @levels.length == 1
         print_message force: true, finish: true
         stop_beeper
@@ -59,6 +61,7 @@ class Progress
     # set note
     def note=(note)
       return unless running?
+
       @levels.last.note = note
     end
 
