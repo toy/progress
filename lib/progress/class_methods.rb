@@ -85,7 +85,7 @@ class Progress
       @highlight = true && value
     end
 
-    # show progerss in terminal title
+    # show progress in terminal title
     def terminal_title?
       @terminal_title.nil? ? io_tty? : @terminal_title
     end
