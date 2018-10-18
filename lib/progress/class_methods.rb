@@ -105,6 +105,15 @@ class Progress
       io.tty? || ENV['PROGRESS_TTY']
     end
 
+    # don't refresh progress (eta) periodically for the duration of the block
+    def without_beeper
+      old_state = @without_beeper
+      @without_beeper = true
+      yield
+    ensure
+      @without_beeper = old_state
+    end
+
   private
 
     attr_reader :eta
@@ -142,7 +151,7 @@ class Progress
 
     def start_beeper
       @beeper = Beeper.new(10) do
-        print_message
+        print_message unless @without_beeper
       end
     end
 

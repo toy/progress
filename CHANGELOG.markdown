@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Add `Progress.without_beeper` for stopping periodical refresh of progress/eta for the duration of the block [@toy](https://github.com/toy)
+
 ## v3.4.0 (2017-10-11)
 
 * Remove special handling for CSV in ruby 1.8 [@toy](https://github.com/toy)

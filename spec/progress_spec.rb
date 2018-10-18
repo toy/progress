@@ -522,5 +522,50 @@ describe Progress do
         it{ is_expected.to be_truthy }
       end
     end
+
+    describe '.without_beeper' do
+      before do
+        allow(Progress).to receive(:start_beeper).and_call_original
+        allow(Progress::Beeper).to receive(:new) do |*, &block|
+          @block = block
+          double(restart: nil, stop: nil)
+        end
+        expect(Progress).to receive(:print_message).exactly(print_times).times
+      end
+
+      context 'when not used' do
+        let(:print_times){ 3 }
+
+        it 'allows beeper to print progress' do
+          Progress.start do
+            @block.call
+          end
+        end
+      end
+
+      context 'when used around progress block' do
+        let(:print_times){ 2 }
+
+        it 'stops beeper from printing progress' do
+          Progress.without_beeper do
+            Progress.start do
+              @block.call
+            end
+          end
+        end
+      end
+
+      context 'when used inside progress block' do
+        let(:print_times){ 2 }
+
+        it 'stops beeper from printing progress' do
+          Progress.start do
+            Progress.without_beeper do
+              @block.call
+            end
+          end
+        end
+      end
+    end
   end
 end
