@@ -277,7 +277,8 @@ describe Progress do
 
               with_progress = enum.with_progress
               expect(with_progress).not_to receive(:warn)
-              expect(with_progress.each{}).to eq(nil)
+              expect(with_progress.each{}).
+                to eq(CSV.open('spec/test.csv').each{})
             end
           else
             it 'calls each only once for CSV and shows warning' do
