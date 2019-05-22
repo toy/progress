@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Progress
   # Repeatedly run block of code after time interval
   class Beeper

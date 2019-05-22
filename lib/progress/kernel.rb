@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'progress'
 
 # Add Progress method as alias to Progress.start

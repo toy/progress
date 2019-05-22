@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'progress'
 
 # Add times_with_progress method to Integer

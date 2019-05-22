@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'enumerator'
 require 'progress/with_progress'
 

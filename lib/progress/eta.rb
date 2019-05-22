@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Progress
   # Estimate time of arrival
   class Eta
