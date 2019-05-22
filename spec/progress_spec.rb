@@ -204,7 +204,7 @@ describe Progress do
 
         describe String do
           it 'calls each only once on StringIO' do
-            enum = "a\nb\nc"
+            enum = "a\nb\nc".dup
             expect(enum).not_to receive(:each)
             io = StringIO.new(enum)
             expect(StringIO).to receive(:new).with(enum).and_return(io)

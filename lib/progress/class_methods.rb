@@ -182,7 +182,7 @@ class Progress
     def message_for_output(options)
       message = build_message(options)
 
-      out = ''
+      out = ''.dup
       out << "\r" if stay_on_line?
       out << message
       out << "\e[K" if stay_on_line?
