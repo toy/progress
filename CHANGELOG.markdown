@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Enable frozen string literals [@toy](https://github.com/toy)
+
 ## v3.5.0 (2018-10-19)
 
 * Add `Progress.without_beeper` for stopping periodical refresh of progress/eta for the duration of the block [@toy](https://github.com/toy)
