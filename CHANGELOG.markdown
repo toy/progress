@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Remove deprecated `rubyforge_project` attribute from gemspec [rubygems/rubygems#2436](https://github.com/rubygems/rubygems/pull/2436) [@toy](https://github.com/toy)
+
 ## v3.5.1 (2019-05-25)
 
 * Enable frozen string literals [@toy](https://github.com/toy)
