@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'progress'
-  s.version     = '3.5.1'
+  s.version     = '3.5.2'
   s.summary     = %q{Show progress of long running tasks}
   s.homepage    = "http://github.com/toy/#{s.name}"
   s.authors     = ['Ivan Kuchin']

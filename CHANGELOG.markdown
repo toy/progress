@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## v3.5.2 (2019-07-14)
+
 * Remove deprecated `rubyforge_project` attribute from gemspec [rubygems/rubygems#2436](https://github.com/rubygems/rubygems/pull/2436) [@toy](https://github.com/toy)
 
 ## v3.5.1 (2019-05-25)
