@@ -64,6 +64,9 @@ Style/EmptyCaseCondition:
 Style/Encoding:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+
 Style/IfUnlessModifier:
   Enabled: false
 
