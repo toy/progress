@@ -52,9 +52,6 @@ Metrics/PerceivedComplexity:
 Style/Alias:
   EnforcedStyle: prefer_alias_method
 
-Style/BracesAroundHashParameters:
-  Enabled: false
-
 Style/DoubleNegation:
   Enabled: false
 
@@ -65,6 +62,15 @@ Style/Encoding:
   Enabled: false
 
 Style/FormatStringToken:
+  Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: false
+
+Style/HashTransformValues:
   Enabled: false
 
 Style/IfUnlessModifier:
