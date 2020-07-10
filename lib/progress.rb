@@ -52,6 +52,7 @@ class Progress
   attr_reader :current
   attr_reader :title
   attr_accessor :note
+
   def initialize(total, title)
     if !total.is_a?(Numeric) && (title.nil? || title.is_a?(Numeric))
       total, title = title, total

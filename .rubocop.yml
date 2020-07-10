@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - '*.gemspec'
+  NewCops: enable
 
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
@@ -48,6 +49,9 @@ Metrics/ModuleLength:
 
 Metrics/PerceivedComplexity:
   Max: 10
+
+Style/AccessorGrouping:
+  Enabled: false
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
