@@ -356,11 +356,11 @@ describe Progress do
       end
 
       def on_line(str)
-        "\r" + str + "\e[K"
+        "\r#{str}\e[K"
       end
 
       def line(str)
-        str + "\n"
+        "#{str}\n"
       end
 
       def on_line_n_title(str)
@@ -390,7 +390,7 @@ describe Progress do
           on_line_n_title("Test: #{hl ' 93.3%'} > #{hl ' 66.7%'}"),
           on_line_n_title('Test: 100.0% > 100.0%'),
           on_line_n_title('Test: 100.0% - enum'),
-          on_line('Test: 100.0% (elapsed: 0s) - enum') + "\n",
+          "#{on_line('Test: 100.0% (elapsed: 0s) - enum')}\n",
           title(''),
         ].flatten.join)
       end

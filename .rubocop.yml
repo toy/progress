@@ -48,7 +48,7 @@ Metrics/ModuleLength:
   Max: 200
 
 Metrics/PerceivedComplexity:
-  Max: 10
+  Max: 11
 
 Style/AccessorGrouping:
   Enabled: false
@@ -81,6 +81,9 @@ Style/IfUnlessModifier:
   Enabled: false
 
 Style/NumericPredicate:
+  Enabled: false
+
+Style/OptionalBooleanParameter:
   Enabled: false
 
 Style/ParallelAssignment:
