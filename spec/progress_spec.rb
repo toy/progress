@@ -86,7 +86,7 @@ describe Progress do
 
       describe 'with_progress' do
         it 'returns with block same as when called with each' do
-          expect(enum.with_progress{}).to eq(enum.with_progress.each{})
+          expect(enum.with_progress(&:to_s)).to eq(enum.with_progress.each(&:to_s))
         end
 
         it 'does not break each' do
@@ -180,7 +180,7 @@ describe Progress do
           describe enum.class do
             it 'calls each only once' do
               expect(enum).to receive(:each).once.and_call_original
-              expect(enum.with_progress.each{}).to eq(enum)
+              expect(enum.with_progress.each(&:to_s)).to eq(enum)
             end
 
             include_examples 'yielding', enum
@@ -193,9 +193,9 @@ describe Progress do
         ].each do |enum|
           describe enum.class do
             it 'calls each twice' do
-              enum_each = enum.each{}
+              enum_each = enum.each(&:to_s)
               expect(enum).to receive(:each).at_most(:twice).and_call_original
-              expect(enum.with_progress.each{}).to eq(enum_each)
+              expect(enum.with_progress.each(&:to_s)).to eq(enum_each)
             end
 
             include_examples 'yielding', enum
@@ -212,7 +212,7 @@ describe Progress do
 
             with_progress = Progress::WithProgress.new(enum)
             expect(with_progress).not_to receive(:warn)
-            expect(with_progress.each{}).to eq(enum)
+            expect(with_progress.each(&:to_s)).to eq(enum)
           end
 
           it 'yields same lines' do
@@ -233,18 +233,18 @@ describe Progress do
 
               with_progress = enum.with_progress
               expect(with_progress).not_to receive(:warn)
-              expect(with_progress.each{}).to eq(enum)
+              expect(with_progress.each(&:to_s)).to eq(enum)
             end
           end
 
           it 'calls each only once for Tempfile' do
             enum = Tempfile.open('progress')
-            enum_each = enum.each{} # returns underlying File
+            enum_each = enum.each(&:to_s) # returns underlying File
             expect(enum_each).to receive(:each).once.and_call_original
 
             with_progress = enum.with_progress
             expect(with_progress).not_to receive(:warn)
-            expect(with_progress.each{}).to eq(enum_each)
+            expect(with_progress.each(&:to_s)).to eq(enum_each)
           end
 
           it 'calls each only once for IO and shows warning' do
@@ -253,7 +253,7 @@ describe Progress do
 
             with_progress = enum.with_progress
             expect(with_progress).to receive(:warn)
-            expect(with_progress.each{}).to eq(enum)
+            expect(with_progress.each(&:to_s)).to eq(enum)
           end
 
           [
@@ -279,8 +279,8 @@ describe Progress do
 
               with_progress = enum.with_progress
               expect(with_progress).not_to receive(:warn)
-              expect(with_progress.each{}).
-                to eq(CSV.open('spec/test.csv').each{})
+              expect(with_progress.each(&:to_s)).
+                to eq(CSV.open('spec/test.csv').each(&:to_s))
             end
           else
             it 'calls each only once for CSV and shows warning' do
@@ -289,7 +289,7 @@ describe Progress do
 
               with_progress = enum.with_progress
               expect(with_progress).to receive(:warn)
-              expect(with_progress.each{}).to eq(enum)
+              expect(with_progress.each(&:to_s)).to eq(enum)
             end
           end
 
@@ -334,11 +334,11 @@ describe Progress do
           Progress.step 2, 'simle'
 
           Progress.step 2, 'times' do
-            3.times.with_progress{}
+            3.times.with_progress(&:to_s)
           end
 
           Progress.step 'enum' do
-            3.times.to_a.with_progress{}
+            3.times.to_a.with_progress(&:to_s)
           end
         end
       end
@@ -426,7 +426,7 @@ describe Progress do
       let(:reference_output) do
         stub_progress_io(reference_io = StringIO.new)
         count_a.times.with_progress('Test') do
-          count_b.times.with_progress{}
+          count_b.times.with_progress(&:to_s)
         end
         reference_io.string
       end
@@ -468,7 +468,7 @@ describe Progress do
 
       it 'outputs same when called using with_progress on list' do
         count_a.times.to_a.with_progress('Test') do
-          count_b.times.to_a.with_progress{}
+          count_b.times.to_a.with_progress(&:to_s)
         end
         expect(io.string).to eq(reference_output)
       end
