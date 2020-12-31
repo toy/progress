@@ -189,7 +189,7 @@ describe Progress do
 
         [
           100.times,
-          'a'..'z',
+          ('a'..'z').dup,
         ].each do |enum|
           describe enum.class do
             it 'calls each twice' do
