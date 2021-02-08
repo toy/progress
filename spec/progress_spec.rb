@@ -5,6 +5,7 @@ require 'progress'
 require 'tempfile'
 require 'shellwords'
 require 'csv'
+require 'set'
 
 describe Progress do
   before do
