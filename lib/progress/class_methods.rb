@@ -1,6 +1,8 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+require 'progress/elapsed_time'
+
 class Progress
   # Class methods of Progress
   module ClassMethods
@@ -165,14 +167,14 @@ class Progress
     end
 
     def time_to_print?
-      !@next_time_to_print || @next_time_to_print <= Time.now
+      !@next_time_to_print || @next_time_to_print <= ElapsedTime.now
     end
 
     def print_message(options = {})
       force = options[:force]
       lock force do
         if force || time_to_print?
-          @next_time_to_print = Time.now + 0.3
+          @next_time_to_print = ElapsedTime.now + 0.3
           restart_beeper
           io << message_for_output(options)
         end

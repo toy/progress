@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Use `Process.clock_gettime` instead of `Time.now` which is faster and should give proper estimates even if sleeping in the middle [#13](https://github.com/toy/progress/issues/13) [@toy](https://github.com/toy)
+
 ## v3.5.2 (2019-07-14)
 
 * Remove deprecated `rubyforge_project` attribute from gemspec [rubygems/rubygems#2436](https://github.com/rubygems/rubygems/pull/2436) [@toy](https://github.com/toy)

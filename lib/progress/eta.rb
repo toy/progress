@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'progress/elapsed_time'
+
 class Progress
   # Estimate time of arrival
   class Eta
     def initialize
-      @started_at = Time.now
+      @started_at = ElapsedTime.now
     end
 
     def left(completed)
@@ -15,7 +17,7 @@ class Progress
     end
 
     def elapsed
-      seconds_to_string(Time.now - @started_at)
+      seconds_to_string(ElapsedTime.now - @started_at)
     end
 
   private
@@ -36,7 +38,7 @@ class Progress
     end
 
     def seconds_left(completed)
-      now = Time.now
+      now = ElapsedTime.now
       return unless completed > 0 && now - @started_at >= 1
 
       current_eta = @started_at + (now - @started_at) / completed
