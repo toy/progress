@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## v3.6.0 (2021-04-02)
+
 * Use `Process.clock_gettime` instead of `Time.now` which is faster and should give proper estimates even if sleeping in the middle [#13](https://github.com/toy/progress/issues/13) [@toy](https://github.com/toy)
 
 ## v3.5.2 (2019-07-14)
