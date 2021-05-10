@@ -2,7 +2,6 @@ AllCops:
   Exclude:
     - '*.gemspec'
   NewCops: enable
-  TargetRubyVersion: 2.4
 
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
