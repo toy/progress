@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - '*.gemspec'
+    - 'vendor/bundle/**/*'
   NewCops: enable
 
 Layout/AccessModifierIndentation:
