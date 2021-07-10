@@ -1,8 +1,8 @@
-[![Gem Version](https://img.shields.io/gem/v/progress.svg?style=flat)](https://rubygems.org/gems/progress)
+[![Gem Version](https://img.shields.io/gem/v/progress?logo=rubygems)](https://rubygems.org/gems/progress)
 [![Build Status](https://img.shields.io/github/workflow/status/toy/progress/check/master?logo=github)](https://github.com/toy/progress/actions/workflows/check.yml)
-[![Code Climate](https://img.shields.io/codeclimate/maintainability/toy/progress.svg?style=flat)](https://codeclimate.com/github/toy/progress)
-[![Depfu](https://badges.depfu.com/badges/528142fc3202e4bd89680832bfc713d7/overview.svg)](https://depfu.com/github/toy/progress)
-[![Inch CI](https://inch-ci.org/github/toy/progress.svg?branch=master&style=flat)](https://inch-ci.org/github/toy/progress)
+[![Code Climate](https://img.shields.io/codeclimate/maintainability/toy/progress?logo=codeclimate)](https://codeclimate.com/github/toy/progress)
+[![Depfu](https://img.shields.io/depfu/toy/progress)](https://depfu.com/github/toy/progress)
+[![Inch CI](https://inch-ci.org/github/toy/progress.svg?branch=master)](https://inch-ci.org/github/toy/progress)
 
 # progress
 
