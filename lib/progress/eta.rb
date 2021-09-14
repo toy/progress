@@ -41,9 +41,9 @@ class Progress
       now = ElapsedTime.now
       return unless completed > 0 && now - @started_at >= 1
 
-      current_eta = @started_at + (now - @started_at) / completed
+      current_eta = @started_at + ((now - @started_at) / completed)
       @left = if @left
-        @left + (current_eta - @left) * (1 + completed) * 0.5
+        @left + ((current_eta - @left) * (1 + completed) * 0.5)
       else
         current_eta
       end

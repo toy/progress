@@ -138,8 +138,8 @@ class Progress
     end
 
     def enum_length(enum)
-      enum.respond_to?(:size) && enum.size ||
-        enum.respond_to?(:length) && enum.length ||
+      (enum.respond_to?(:size) && enum.size) ||
+        (enum.respond_to?(:length) && enum.length) ||
         enum.count
     end
   end
