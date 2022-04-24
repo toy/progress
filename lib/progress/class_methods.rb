@@ -105,7 +105,7 @@ class Progress
     end
 
     def io_tty?
-      io.tty? || ENV['PROGRESS_TTY']
+      io.tty? || ENV.fetch('PROGRESS_TTY', nil)
     end
 
     # don't refresh progress (eta) periodically for the duration of the block
