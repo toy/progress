@@ -43,7 +43,7 @@ class Progress
 
       current_eta = @started_at + ((now - @started_at) / completed)
       @left = if @left
-        @left + ((current_eta - @left) * (1 + completed) * 0.5)
+        @left + ((current_eta - @left) * (completed + 1) * 0.5)
       else
         current_eta
       end
