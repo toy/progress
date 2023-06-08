@@ -10,9 +10,6 @@ jobs:
     strategy:
       matrix:
         ruby:
-        - '2.0'
-        - '2.1'
-        - '2.2'
         - '2.3'
         - '2.4'
         - '2.5'
@@ -31,3 +28,18 @@ jobs:
         ruby-version: "${{ matrix.ruby }}"
         bundler-cache: true
     - run: bundle exec rspec
+  legacy:
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    strategy:
+      matrix:
+        container:
+        - rspec/ci:1.9.3
+        - ruby:2.0
+        - ruby:2.1
+        - ruby:2.2
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    - run: bundle install
+    - run: bundle exec rspec --format documentation
