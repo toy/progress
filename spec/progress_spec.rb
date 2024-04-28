@@ -218,8 +218,7 @@ describe Progress do
 
           it 'yields same lines' do
             enum = "a\nb\nc"
-            lines = []
-            Progress::WithProgress.new(enum).each{ |line| lines << line }
+            lines = Progress::WithProgress.new(enum).map{ |line| line }
             expect(lines).to eq(enum.lines.to_a)
           end
         end
