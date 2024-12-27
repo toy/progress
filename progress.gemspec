@@ -23,6 +23,9 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
 
   s.add_development_dependency 'rspec', '~> 3.0'
+  if RUBY_VERSION >= '3.4'
+    s.add_development_dependency 'csv'
+  end
   if RUBY_VERSION >= '2.5'
     s.add_development_dependency 'rubocop', '~> 1.22', '!= 1.22.2'
     s.add_development_dependency 'rubocop-rspec', '~> 2.0'
