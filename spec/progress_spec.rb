@@ -570,5 +570,61 @@ describe Progress do
         end
       end
     end
+
+    describe 'config methods' do
+      shared_examples 'converts to boolean, defaults to io_tty?' do
+        context 'when set to true' do
+          let(:value){ true }
+
+          it{ is_expected.to eq true }
+        end
+
+        context 'when set to truthy value' do
+          let(:value){ :foo }
+
+          it{ is_expected.to eq true }
+        end
+
+        context 'when set to false' do
+          let(:value){ false }
+
+          it{ is_expected.to eq false }
+        end
+
+        context 'when set to nil' do
+          let(:value){ nil }
+
+          before do
+            allow(described_class).to receive(:io_tty?).and_return(:TTY?)
+          end
+
+          it{ is_expected.to eq :TTY? }
+        end
+      end
+
+      describe '.stay_on_line?' do
+        subject{ Progress.stay_on_line? }
+
+        before{ Progress.stay_on_line = value }
+
+        include_examples 'converts to boolean, defaults to io_tty?'
+      end
+
+      describe '.highlight?' do
+        subject{ Progress.highlight? }
+
+        before{ Progress.highlight = value }
+
+        include_examples 'converts to boolean, defaults to io_tty?'
+      end
+
+      describe '.terminal_title?' do
+        subject{ Progress.terminal_title? }
+
+        before{ Progress.terminal_title = value }
+
+        include_examples 'converts to boolean, defaults to io_tty?'
+      end
+    end
   end
 end
