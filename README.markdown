@@ -1,5 +1,5 @@
 [![Gem Version](https://img.shields.io/gem/v/progress?logo=rubygems)](https://rubygems.org/gems/progress)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/toy/progress/check.yml?logo=github)](https://github.com/toy/progress/actions/workflows/check.yml)
+[![Check](https://img.shields.io/github/actions/workflow/status/toy/progress/check.yml?label=check&logo=github)](https://github.com/toy/progress/actions/workflows/check.yml)
 [![Rubocop](https://img.shields.io/github/actions/workflow/status/toy/progress/rubocop.yml?label=rubocop&logo=rubocop)](https://github.com/toy/progress/actions/workflows/rubocop.yml)
 [![Code Climate](https://img.shields.io/codeclimate/maintainability/toy/progress?logo=codeclimate)](https://codeclimate.com/github/toy/progress)
 [![Depfu](https://img.shields.io/depfu/toy/progress)](https://depfu.com/github/toy/progress)
