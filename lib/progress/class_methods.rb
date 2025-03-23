@@ -75,7 +75,7 @@ class Progress
 
     # explicitly set staying on one line [true/false/nil]
     def stay_on_line=(value)
-      @stay_on_line = value && true # rubocop:disable Lint/LiteralAsCondition
+      @stay_on_line = value && true
     end
 
     # highlight output using control characters
@@ -85,7 +85,7 @@ class Progress
 
     # explicitly set highlighting [true/false/nil]
     def highlight=(value)
-      @highlight = value && true # rubocop:disable Lint/LiteralAsCondition
+      @highlight = value && true
     end
 
     # show progress in terminal title
@@ -95,7 +95,7 @@ class Progress
 
     # explicitly set showing progress in terminal title [true/false/nil]
     def terminal_title=(value)
-      @terminal_title = value && true # rubocop:disable Lint/LiteralAsCondition
+      @terminal_title = value && true
     end
 
     attr_writer :io
