@@ -392,7 +392,7 @@ describe Progress do
           on_line_n_title('Test: 100.0% - enum'),
           "#{on_line('Test: 100.0% (elapsed: 0s) - enum')}\n",
           title(''),
-        ].flatten.join)
+        ].join)
       end
 
       it 'produces valid output when not staying on line' do
@@ -416,7 +416,7 @@ describe Progress do
           line_n_title('Test: 100.0% - enum'),
           line('Test: 100.0% (elapsed: 0s) - enum'),
           title(''),
-        ].flatten.join)
+        ].join)
       end
     end
 
