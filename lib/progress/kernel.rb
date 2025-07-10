@@ -6,7 +6,7 @@ require 'progress'
 module Kernel
 private
 
-  define_method :Progress do |*args, &block|
+  def Progress(*args, &block) # rubocop:disable Naming/MethodName
     Progress.start(*args, &block)
   end
 end
