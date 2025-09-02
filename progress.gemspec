@@ -28,6 +28,6 @@ Gem::Specification.new do |s|
   end
   if RUBY_VERSION >= '2.5'
     s.add_development_dependency 'rubocop', '~> 1.22', '!= 1.22.2'
-    s.add_development_dependency 'rubocop-rspec', '~> 2.0'
+    s.add_development_dependency 'rubocop-rspec', '~> 3.7'
   end
 end
