@@ -224,11 +224,10 @@ describe Progress do
         end
 
         describe IO do
-          [
-            File.open(__FILE__),
-            StringIO.new(File.read(__FILE__)),
-          ].each do |enum|
-            it "calls each only once for #{enum.class}" do
+          after{ enum.close }
+
+          shared_examples 'calls each only once' do
+            it 'calls each only once' do
               expect(enum).to receive(:each).once.and_call_original
 
               with_progress = enum.with_progress
@@ -237,37 +236,58 @@ describe Progress do
             end
           end
 
-          it 'calls each only once for Tempfile' do
-            enum = Tempfile.open('progress')
-            enum_each = enum.each(&:to_s) # returns underlying File
-            expect(enum_each).to receive(:each).once.and_call_original
-
-            with_progress = enum.with_progress
-            expect(with_progress).not_to receive(:warn)
-            expect(with_progress.each(&:to_s)).to eq(enum_each)
-          end
-
-          it 'calls each only once for IO and shows warning' do
-            enum = IO.popen("cat #{__FILE__.shellescape}")
-            expect(enum).to receive(:each).once.and_call_original
-
-            with_progress = enum.with_progress
-            expect(with_progress).to receive(:warn)
-            expect(with_progress.each(&:to_s)).to eq(enum)
-          end
-
-          [
-            File.open(__FILE__),
-            StringIO.new(File.read(__FILE__)),
-            Tempfile.open('progress').tap do |f|
-              f.write(File.read(__FILE__))
-              f.rewind
-            end,
-            IO.popen("cat #{__FILE__.shellescape}"),
-          ].each do |enum|
-            it "yields same lines for #{enum.class}" do
+          shared_examples 'yields all lines' do
+            it 'yields all lines' do
               expect(enum.with_progress.entries).to eq(File.readlines(__FILE__))
             end
+          end
+
+          context 'for File instance' do
+            let(:enum){ File.new(__FILE__) }
+
+            include_examples 'calls each only once'
+            include_examples 'yields all lines'
+          end
+
+          context 'for StringIO instance' do
+            let(:enum){ StringIO.new(File.read(__FILE__)) }
+
+            include_examples 'calls each only once'
+            include_examples 'yields all lines'
+          end
+
+          context 'for Tempfile instance' do
+            let(:enum){ Tempfile.new('progress') }
+
+            before do
+              enum.write(File.read(__FILE__))
+              enum.rewind
+            end
+
+            it 'calls each only once for Tempfile' do
+              enum_each = enum.each(&:to_s) # returns underlying File
+              expect(enum_each).to receive(:each).once.and_call_original
+
+              with_progress = enum.with_progress
+              expect(with_progress).not_to receive(:warn)
+              expect(with_progress.each(&:to_s)).to eq(enum_each)
+            end
+
+            include_examples 'yields all lines'
+          end
+
+          context 'for IO instance' do
+            let(:enum){ IO.popen("cat #{__FILE__.shellescape}") }
+
+            it 'calls each only once for IO and shows warning' do
+              expect(enum).to receive(:each).once.and_call_original
+
+              with_progress = enum.with_progress
+              expect(with_progress).to receive(:warn)
+              expect(with_progress.each(&:to_s)).to eq(enum)
+            end
+
+            include_examples 'yields all lines'
           end
         end
 
